@@ -1,0 +1,5 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<footer>
+    <p>&copy; 2025 Cửa Hàng Bán Sách. Mọi quyền được bảo lưu.</p>
+</footer>
