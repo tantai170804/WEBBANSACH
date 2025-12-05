@@ -1,0 +1,58 @@
+/* Overall Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+}
+
+/* Container Styles */
+.container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* Book List Styles */
+.book-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.book {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center;
+}
+
+/* Header Styles */
+header {
+    background-color: #343a40;  /* Dark background for header */
+    color: white;                /* White text */
+    padding: 20px;
+    text-align: center;
+}
+
+header nav a {
+    color: white;            /* White text for links */
+    margin: 0 15px;         /* Spacing between links */
+    text-decoration: none;   /* Remove underline */
+}
+
+header nav a:hover {
+    text-decoration: underline; /* Underline on hover */
+}
+
+/* Footer Styles */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #343a40;  /* Dark background for footer */
+    color: white;                /* White text */
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
