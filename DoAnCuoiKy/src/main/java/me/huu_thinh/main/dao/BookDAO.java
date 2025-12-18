@@ -1,6 +1,7 @@
 package me.huu_thinh.main.dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -19,10 +20,18 @@ public class BookDAO {
 			Statement stmt = conn.createStatement();
 			ResultSet result = stmt.executeQuery("SELECT * FROM book;");
 		  while (result.next()) {
-			String bookname = result.getString("book_name");
+			String bookid = result.getString("book_id");
+			String title = result.getString("title");
 			String author = result.getString("author");
+			String publisher = result.getString("title");
 			int price = result.getInt("price");
-			Book student = new Book(bookname,author,price);
+			int quantity_in_stock = result.getInt("quantity_in_stock");
+			int category_id = result.getInt("category_id");
+			String description = result.getString("description");
+			Date create_at = result.getDate("create_at");
+			Date update_at = result.getDate("create_at");
+			Book student = new Book(bookid, title, author, publisher,
+					price, quantity_in_stock, category_id, description, create_at, update_at);
 			resultList.add(student);
 			}
 			stmt.close();
@@ -40,7 +49,7 @@ public class BookDAO {
 	public static void insert(Book student) {
 		
 	}
-	public static  void update(Book student) {
+	public static void update(Book student) {
 		
 	}
 	public static void delete(String id) {
