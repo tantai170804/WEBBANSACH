@@ -18,20 +18,23 @@ public class BookDAO {
 		try {
 			conn = DatabaseConnection.getConnection();
 			Statement stmt = conn.createStatement();
-			ResultSet result = stmt.executeQuery("SELECT * FROM book;");
+			ResultSet result = stmt.executeQuery("SELECT * FROM books;");
 		  while (result.next()) {
-			String bookid = result.getString("book_id");
+			int bookid = result.getInt("book_id");
+			String bookcode = result.getString("book_code");
 			String title = result.getString("title");
 			String author = result.getString("author");
-			String publisher = result.getString("title");
+			String publisher = result.getString("publisher");
 			int price = result.getInt("price");
 			int quantity_in_stock = result.getInt("quantity_in_stock");
-			int category_id = result.getInt("category_id");
+			String image_url = result.getString("image_url");
 			String description = result.getString("description");
+			int category_id = result.getInt("category_id");
+			boolean canshow = result.getBoolean("can_show");
 			Date create_at = result.getDate("create_at");
-			Date update_at = result.getDate("create_at");
-			Book student = new Book(bookid, title, author, publisher,
-					price, quantity_in_stock, category_id, description, create_at, update_at);
+			Date update_at = result.getDate("update_at");
+			Book student = new Book(bookid, bookcode, title, author, publisher,
+					price, quantity_in_stock, image_url, description, category_id, canshow, create_at, update_at);
 			resultList.add(student);
 			}
 			stmt.close();
