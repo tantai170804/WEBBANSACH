@@ -28,6 +28,7 @@ public class LoginServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
@@ -45,5 +46,7 @@ public class LoginServlet extends HttpServlet {
 			request.setAttribute("username", username); // để giữ lại username
 			request.getRequestDispatcher("/html/login.jsp").forward(request, response);
 		}
+		
+		
 	}
 }
