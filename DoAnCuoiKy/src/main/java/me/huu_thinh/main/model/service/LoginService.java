@@ -18,8 +18,6 @@ public class LoginService {
         if (username == null || password == null) {
             return null;
         }
-
-        
         username = username.trim();
         password = password.trim();
 
@@ -28,6 +26,7 @@ public class LoginService {
         }
 
         // Gọi DAO kiểm tra DB
+
         return userDAO.findByUsernameAndPassword(username, password);
     }
 }
