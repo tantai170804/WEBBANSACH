@@ -4,7 +4,7 @@ import java.sql.Date;
 
 public class User {
 
-	private int userId;
+	private int userid;
 	private String userName;
 	private String password;
 	private String email;
@@ -13,9 +13,12 @@ public class User {
 	private String role;
 	private Date createAt;
 	
+	public User() {	}
+	
+	
 	public User(int user_id, String userName,String email, String password, String phone, String address, String role, Date create_at) {
 		super();
-		this.userId = user_id;
+		this.userid = user_id;
 		this.userName = userName;
 		this.password = password;
 		this.email = email;
@@ -26,7 +29,7 @@ public class User {
 	}
 
 	public int getUserId() {
-		return userId;
+		return userid;
 	}
 
 	public String getUserName() {

@@ -3,67 +3,92 @@ package me.huu_thinh.main.service;
 import me.huu_thinh.main.dao.UserDAO;
 
 public class RegisterService {
-	  private final UserDAO userDAO;
 
-	    public RegisterService() {
-	        this.userDAO = new UserDAO();
-	    }
+    private final UserDAO userDAO;
 
-	    public RegisterResult register(String username, String password, String confirmPassword, String fullName) {
+    public RegisterService() {
+        this.userDAO = new UserDAO();
+    }
 
-	        if (username == null || password == null || confirmPassword == null) {
-	            return RegisterResult.fail("Thiếu dữ liệu");
-	        }
+    public RegisterResult register(String username,
+                                   String password,
+                                   String confirmPassword,
+                                   String fullName) {
 
-	        username = username.trim();
-	        password = password.trim();
-	        confirmPassword = confirmPassword.trim();
-	        if (fullName != null) fullName = fullName.trim();
+        String u = normalize(username);
+        String p = normalize(password);
+        String cp = normalize(confirmPassword);
+        String fn = normalize(fullName); // optional
 
-	        if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-	            return RegisterResult.fail("Vui lòng nhập đầy đủ thông tin");
-	        }
+        // 1) Validate input
+        if (u == null) {
+            return RegisterResult.fail("Vui lòng nhập tên đăng nhập.");
+        }
+        if (p == null) {
+            return RegisterResult.fail("Vui lòng nhập mật khẩu.");
+        }
+        if (cp == null) {
+            return RegisterResult.fail("Vui lòng nhập lại mật khẩu.");
+        }
 
-	        if (!password.equals(confirmPassword)) {
-	            return RegisterResult.fail("Mật khẩu nhập lại không khớp");
-	        }
+        if (u.length() < 3) {
+            return RegisterResult.fail("Tên đăng nhập phải có ít nhất 3 ký tự.");
+        }
+        if (p.length() < 6) {
+            return RegisterResult.fail("Mật khẩu phải có ít nhất 6 ký tự.");
+        }
+        if (!p.equals(cp)) {
+            return RegisterResult.fail("Mật khẩu xác nhận không khớp.");
+        }
 
-	        if (userDAO.existsByUsername(username)) {
-	            return RegisterResult.fail("Username đã tồn tại");
-	        }
+        // (Tuỳ chọn) validate fullName nếu bạn muốn bắt buộc
+        // if (fn == null) return RegisterResult.fail("Vui lòng nhập họ tên.");
 
-	        boolean ok = userDAO.createUser(username, password, fullName); // (plaintext) đơn giản
-	        if (!ok) {
-	            return RegisterResult.fail("Đăng ký thất bại, thử lại sau");
-	        }
+        // 2) Check trùng username
+        if (userDAO.existsByUsername(u)) {
+            return RegisterResult.fail("Tên đăng nhập đã tồn tại.");
+        }
 
-	        return RegisterResult.success();
-	    }
+        // 3) Tạo user trong DB
+        boolean created = userDAO.createUser(u, p, fn);
 
-	    // DTO kết quả
-	    public static class RegisterResult {
-	        private final boolean success;
-	        private final String message;
+        if (!created) {
+            return RegisterResult.fail("Đăng ký thất bại. Vui lòng thử lại.");
+        }
 
-	        private RegisterResult(boolean success, String message) {
-	            this.success = success;
-	            this.message = message;
-	        }
+        return RegisterResult.success();
+    }
 
-	        public static RegisterResult success() {
-	            return new RegisterResult(true, null);
-	        }
+    private String normalize(String s) {
+        if (s == null) return null;
+        s = s.trim();
+        return s.isEmpty() ? null : s;
+    }
 
-	        public static RegisterResult fail(String message) {
-	            return new RegisterResult(false, message);
-	        }
+    // DTO trả kết quả cho Servlet
+    public static class RegisterResult {
+        private final boolean success;
+        private final String message;
 
-	        public boolean isSuccess() {
-	            return success;
-	        }
+        private RegisterResult(boolean success, String message) {
+            this.success = success;
+            this.message = message;
+        }
 
-	        public String getMessage() {
-	            return message;
-	        }
-	    }
+        public static RegisterResult success() {
+            return new RegisterResult(true, null);
+        }
+
+        public static RegisterResult fail(String message) {
+            return new RegisterResult(false, message);
+        }
+
+        public boolean isSuccess() {
+            return success;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+    }
 }

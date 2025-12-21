@@ -10,59 +10,44 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import me.huu_thinh.main.model.User;
-import me.huu_thinh.main.service.LoginService;
+import me.huu_thinh.main.model.service.LoginService;
+
+
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
-    private static final long serialVersionUID = 1L;
+	private final LoginService loginService = new LoginService();
 
-    private static final String LOGIN_JSP = "/html/login.jsp";
-    private static final String HOME_PATH = "/html/home";
-    private static final int SESSION_TIMEOUT_SECONDS = 30 * 60; // 30 phút
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		request.getRequestDispatcher("/html/login.jsp").forward(request, response);
+	}
 
-    private final LoginService loginService = new LoginService();
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.getRequestDispatcher(LOGIN_JSP).forward(request, response);
-    }
+		
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
 
-        request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
+		User user = loginService.login(username, password);
 
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-
-        // Giữ lại username để user khỏi nhập lại khi sai
-        request.setAttribute("username", username);
-
-        User user = loginService.login(username, password);
-
-        if (user != null) {
-            // Chống session fixation: hủy session cũ (nếu có) rồi tạo session mới
-            HttpSession oldSession = request.getSession(false);
-            if (oldSession != null) {
-                oldSession.invalidate();
-            }
-
-            HttpSession session = request.getSession(true);
-            session.setMaxInactiveInterval(SESSION_TIMEOUT_SECONDS);
-
-            // Lưu user (nếu User có field nhạy cảm thì nên lưu userId/role thay vì cả object)
-            session.setAttribute("currentUser", user);
-
-            response.sendRedirect(request.getContextPath() + HOME_PATH);
-            return;
-        }
-
-        // Login thất bại
-        request.setAttribute("error", "Sai tên đăng nhập hoặc mật khẩu");
-        request.getRequestDispatcher(LOGIN_JSP).forward(request, response);
-    }
+		if (user != null) {
+			HttpSession session = request.getSession(true);
+			session.setAttribute("currentUser", user);
+			response.sendRedirect(request.getContextPath() + "/home");
+		} else {
+			request.setAttribute("error", "Sai username hoặc password");
+			request.setAttribute("username", username); // để giữ lại username
+			request.getRequestDispatcher("/html/login.jsp").forward(request, response);
+		}
+		
+		
+	}
 }
