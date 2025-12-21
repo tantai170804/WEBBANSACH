@@ -1,0 +1,105 @@
+		body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        header {
+    background-color: #343a40;  /* Dark background for header */
+    color: white;                /* White text */
+    padding: 20px;
+    text-align: center;
+}
+
+header nav a {
+    color: white;            /* White text for links */
+    margin: 0 15px;         /* Spacing between links */
+    text-decoration: none;   /* Remove underline */
+}
+
+header nav a:hover {
+    text-decoration: underline; /* Underline on hover */
+}
+
+/* Footer Styles */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #343a40;  /* Dark background for footer */
+    color: white;                /* White text */
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+        .search-bar {
+            margin: 20px auto;
+            max-width: 600px;
+            display: flex;
+        }
+        .search-bar input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .search-bar button {
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .details {
+            display: flex;
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+        .book-info {
+            flex: 1;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+        }
+        .book-info h2 {
+            margin-top: 0;
+        }
+        .price {
+            color: #28a745;
+            font-size: 1.5em;
+        }
+        .book-image {
+            max-width: 300px;
+            margin-left: 20px;
+        }
+        
+        .icons {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+        .icons i {
+            color: white;
+            margin-left: 15px;
+            cursor: pointer;
+        }
+        .book-info {
+    flex: 2;
+}
+
+.book-image {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end; /* đẩy ảnh sang phải */
+}
+
+.book-image img {
+    width: 250px;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
