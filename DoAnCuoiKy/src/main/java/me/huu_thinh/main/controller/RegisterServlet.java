@@ -8,9 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import me.huu_thinh.main.model.service.RegisterService;
-
-
+import me.huu_thinh.main.service.RegisterService;
 
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {

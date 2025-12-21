@@ -1,0 +1,84 @@
+/* Header Styles */
+header {
+    background-color: #343a40;  /* Dark background for header */
+    color: white;                /* White text */
+    padding: 20px;
+    text-align: center;
+}
+
+header nav a {
+    color: white;            /* White text for links */
+    margin: 0 15px;         /* Spacing between links */
+    text-decoration: none;   /* Remove underline */
+}
+
+header nav a:hover {
+    text-decoration: underline; /* Underline on hover */
+}
+
+/* Footer Styles */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #343a40;  /* Dark background for footer */
+    color: white;                /* White text */
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 20px;
+}
+
+h2 {
+    color: #333;
+    text-align: center;
+}
+
+/* Thay đổi định dạng cho biểu mẫu */
+form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: auto; /* Đưa biểu mẫu vào giữa trang */
+}
+
+/* Căn chỉnh các thẻ div */
+div {
+    margin-bottom: 15px;
+}
+
+/* Định dạng cho các trường nhập liệu */
+input[type="text"],
+input[type="password"],
+button {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Đảm bảo padding không làm dịch chuyển kích thước của element */
+}
+
+/* Thay đổi màu sắc cho nút */
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+/* Hiệu ứng hover cho nút */
+button:hover {
+    background-color: #45a049;
+}
+
+/* Định dạng cho thông báo lỗi */
+p.error {
+    color: red;
+    text-align: center; /* Căn giữa thông báo lỗi */
+}

@@ -11,18 +11,23 @@ import javax.servlet.http.HttpSession;
 
 @WebServlet("/logout")
 public class LogoutServlet extends HttpServlet {
+	
+     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1958521305860557086L;
+	private static final String HOME_JSP = "/html/home";
+	 @Override
+	    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+	            throws ServletException, IOException {
+	        HttpSession session = request.getSession(false); 
+	        
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        HttpSession session = request.getSession(false); 
-        // false: không tạo session mới
-
-        if (session != null) {
-            session.invalidate(); // Hủy session
-        }
-        // Chuyển về trang login hoặc home
-        response.sendRedirect("login.jsp"); 
-        // hoặc response.sendRedirect("home");
-    }
+	        if (session != null) {
+	            session.invalidate(); 
+	        }
+	       
+	        response.sendRedirect(request.getContextPath() + HOME_JSP); 
+	        
+	    }
 }

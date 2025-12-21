@@ -5,18 +5,20 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Register</title>
+    <title>Đăng ký</title>
+    <link href="${pageContext.request.contextPath}/css/login.css" rel="stylesheet" type="text/css" >
 </head>
+<jsp:include page="header.jsp" />
 <body>
 
-<h2>Register</h2>
+<h2>Đăng ký</h2>
 
 <form method="post" action="${pageContext.request.contextPath}/register">
 
     <div>
         <input type="text"
                name="username"
-               placeholder="Username"
+               placeholder="Tên đăng nhập"
                value="${username}"
                required />
     </div>
@@ -24,21 +26,21 @@
     <div>
         <input type="password"
                name="password"
-               placeholder="Password"
+               placeholder="Mật khẩu"
                required />
     </div>
 
     <div>
         <input type="password"
                name="confirmPassword"
-               placeholder="Confirm Password"
+               placeholder="Xác nhận mật khẩu"
                required />
     </div>
 
     <div>
         <input type="text"
                name="fullName"
-               placeholder="Full name"
+               placeholder="Tên đầy đủ"
                value="${fullName}" />
     </div>
 
@@ -48,17 +50,18 @@
 
     <!-- Hiển thị lỗi -->
     <c:if test="${not empty error}">
-        <p style="color:red">
+        <p class="error">
             <c:out value="${error}" />
         </p>
     </c:if>
-
+	<p>
+    Đã có tài khoản?
+    	<a href="${pageContext.request.contextPath}/login">Đăng nhập</a>
+	</p>
 </form>
 
-<p>
-    Đã có tài khoản?
-    <a href="${pageContext.request.contextPath}/login">Login</a>
-</p>
+
 
 </body>
+<jsp:include page="footer.jsp" />
 </html>

@@ -13,15 +13,21 @@ import me.huu_thinh.main.dao.BookDAO;
 import me.huu_thinh.main.model.Book;
 
 @WebServlet("/html/home")
-public class Home extends HttpServlet {
+public class HomeServlet extends HttpServlet {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6259630436033547445L;
+
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		List<Book> books = BookDAO.getAll();
 		request.setAttribute("books", books);
+		
 		request.getServletContext().getRequestDispatcher("/html/home.jsp").forward(request, response);
 	}
-//	public void doPost() {
-//		
-//	}
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request,response);
+	}
 	
 }

@@ -28,7 +28,7 @@ public class UserDAO {
 			String phone = result.getString("phone");
 			String address = result.getString("address");
 			String role = result.getString("role");
-			Date create_at = result.getDate("create_at");
+			Date create_at = result.getDate("created_at");
 			User student = new User(userid, username, password, email, phone, address, role, create_at);
 			resultList.add(student);
 			}
@@ -79,12 +79,12 @@ public class UserDAO {
 	    try {
 	        conn = DatabaseConnection.getConnection();
 
-	        String sql = "INSERT INTO users (username, password_hash, role, create_at) VALUES (?, ?, ?, ?)";
+	        String sql = "INSERT INTO users (username, password_hash, role, created_at) VALUES (?, ?, ?, ?)";
 	        PreparedStatement ps = conn.prepareStatement(sql);
 
 	        ps.setString(1, username);
 	        ps.setString(2, password);          // đang để plaintext theo yêu cầu "đơn giản"
-	        ps.setString(3, "USER");            // role mặc định
+	        ps.setString(3, "customer");            // role mặc định
 	        ps.setDate(4, new Date(System.currentTimeMillis())); // ngày tạo
 
 	        int rows = ps.executeUpdate();
@@ -123,7 +123,7 @@ public class UserDAO {
 	            String phone = result.getString("phone");
 	            String address = result.getString("address");
 	            String role = result.getString("role");
-	            Date create_at = result.getDate("create_at");
+	            Date create_at = result.getDate("created_at");
 
 	            return new User(userid, uname, pass, email, phone, address, role, create_at);
 	        }
