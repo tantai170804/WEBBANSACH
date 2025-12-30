@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import me.huu_thinh.main.service.RegisterService;
 
-
-
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
 

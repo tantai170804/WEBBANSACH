@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -12,14 +13,27 @@
 <jsp:include page="header.jsp" />
 <body>
 <div class="container">
-    <h2>Sách Nổi Bật</h2>
+	<fmt:setLocale value="vi_VN"/>
+	<div class="search-bar">
+    	<input type="text" placeholder="Tìm kiếm sách...">
+    	<button>Tìm Kiếm</button>
+	</div>
+    <h2>Danh sách sản phẩm</h2>
     <div class="book-list">
         <c:forEach var="book" items="${books}">
-            <div class="book">
-                <h3>${book.title}</h3>
-                <p>Tác giả: ${book.author}</p>
-                <p>Giá: ${book.price} $</p>
-            </div>
+       		
+            	<div class="book"> 
+            		<a href="${pageContext.request.contextPath}/html/bookdetail?id=${book.bookId}">
+            			<img src="${pageContext.request.contextPath}/book_img/${book.imageUrl}" alt="${book.title}" style="width: 100%; height: auto; border-radius: 5px;"> <!-- Hiển thị hình ảnh -->
+                	</a>
+                	<h3>${book.title}</h3>
+                	<p>Tác giả: ${book.author}</p>
+                
+                	<p>Giá: <fmt:formatNumber value="${book.price}" type="currency" currencyCode="VND"/></p>
+                	<p>Số lượng: ${book.quantityInStock}</p>
+                	
+            	</div>
+            
         </c:forEach>
     </div>
 </div>

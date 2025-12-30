@@ -11,7 +11,7 @@ public class User {
 	private String phone;
 	private String address;
 	private String role;
-	private Date create_at;
+	private Date createAt;
 	
 	public User() {	}
 	
@@ -25,30 +25,39 @@ public class User {
 		this.phone = phone;
 		this.address = address;
 		this.role = role;
-		this.create_at = create_at;
+		this.createAt = create_at;
 	}
+
 	public int getUserId() {
 		return userid;
 	}
+
 	public String getUserName() {
 		return userName;
 	}
+
 	public String getPassword() {
 		return password;
 	}
-	public String getPhone() {
-		return phone;
-	}
-	public String getAddress() {
-		return address;
-	}
-	public String getRole() {
-		return role;
-	}
-	public Date getCreateAt() {
-		return create_at;
-	}
+
 	public String getEmail() {
 		return email;
 	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public Date getCreateAt() {
+		return createAt;
+	}
+	
 }

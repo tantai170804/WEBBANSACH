@@ -1,14 +1,45 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng nhập</title>
+    <link href="${pageContext.request.contextPath}/css/login.css" rel="stylesheet" type="text/css" >
+</head>
+<body>
+<jsp:include page="header.jsp" />
+<h2>Đăng nhập</h2>
+>>>>>>> 75098aff0fc7f529f8a7f12be0d21c363fe4c2d1
 <form method="post" action="${pageContext.request.contextPath}/login">
+    <div>
+        <input type="text"
+               name="username"
+               placeholder="Tên đăng nhập"
+               value="${username}"
+               required />
+    </div>
 
-	<input type="text" name="username" placeholder="Username"
-		value="${username}" required /> <input type="password"
-		name="password" placeholder="Password" required
-		autocomplete="current-password" />
+    <div>
+        <input type="password"
+               name="password"
+               placeholder="Mật khẩu"
+               required
+               autocomplete="current-password" />
+    </div>
 
-	<button type="submit">Login</button>
-	<c:if test="${not empty error}">
-		<p style="color: red">
-			<c:out value="${error}" />
-		</p>
-	</c:if>
+    <div>
+        <button type="submit">Đăng nhập</button>
+    </div>
+ 	
+    <c:if test="${not empty error}">
+        <p class="error">
+            <c:out value="${error}" />
+        </p>
+    </c:if>
+	<p>Chưa có tài khoản? <a href="${pageContext.request.contextPath}/register">Đăng ký ngay!</a></p>
+</form>
+<jsp:include page="footer.jsp" />
+</body>
+</html>

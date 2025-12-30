@@ -1,4 +1,4 @@
-/* Overall Styles */
+	/* Overall Styles */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -12,6 +12,25 @@ body {
     max-width: 1200px;
     margin: auto;
 }
+.search-bar {
+            margin: 20px auto;
+            max-width: 600px;
+            display: flex;
+}
+.search-bar input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+.search-bar button {
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
 
 /* Book List Styles */
 .book-list {
@@ -26,6 +45,16 @@ body {
     border-radius: 5px;
     padding: 10px;
     text-align: center;
+}
+
+.book {
+    cursor: pointer;
+}
+
+.book-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
 
 /* Header Styles */
@@ -55,4 +84,9 @@ footer {
     position: relative;
     bottom: 0;
     width: 100%;
+}
+.book img {
+    max-width: 100%;  /* Đảm bảo hình ảnh không vượt quá chiều rộng của khối */
+    height: auto;     /* Giữ tỷ lệ hình ảnh */
+    border-radius: 5px;
 }
