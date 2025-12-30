@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import me.huu_thinh.main.model.service.RegisterService;
+import me.huu_thinh.main.service.RegisterService;
 
 
 
@@ -38,14 +38,13 @@ public class RegisterServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
-        String fullName = request.getParameter("fullName"); // optional
 
         // Giữ lại dữ liệu đã nhập để user khỏi nhập lại khi lỗi
         request.setAttribute("username", username);
-        request.setAttribute("fullName", fullName);
+
 
         RegisterService.RegisterResult result =
-                registerService.register(username, password, confirmPassword, fullName);
+                registerService.register(username, password, confirmPassword);
 
         if (result.isSuccess()) {
             // Đăng ký thành công -> về trang login

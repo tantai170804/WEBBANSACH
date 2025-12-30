@@ -34,14 +34,6 @@
                placeholder="Confirm Password"
                required />
     </div>
-
-    <div>
-        <input type="text"
-               name="fullName"
-               placeholder="Full name"
-               value="${fullName}" />
-    </div>
-
     <div>
         <button type="submit">Register</button>
     </div>

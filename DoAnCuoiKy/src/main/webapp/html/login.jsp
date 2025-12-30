@@ -1,5 +1,4 @@
 
-
 <form method="post" action="${pageContext.request.contextPath}/login">
 
 	<input type="text" name="username" placeholder="Username"
