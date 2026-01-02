@@ -37,7 +37,8 @@ public class LoginServlet extends HttpServlet {
 		if (user != null) {
 			HttpSession session = request.getSession(true);
 			session.setAttribute("currentUser", user);
-			response.sendRedirect(request.getContextPath() + "/home");
+			response.sendRedirect(request.getContextPath() + "/html/home");
+
 		} else {
 			request.setAttribute("error", "Sai username hoặc password");
 			request.setAttribute("username", username); // để giữ lại username

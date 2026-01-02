@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,45 +102,40 @@ public class UserDAO {
 	        }
 	    }
 	}
-	// Dùng cho login
 	public User findByUsernameAndPassword(String username, String password) {
-	    Connection conn = null;
+	    String sql = "SELECT * FROM users WHERE username = ? AND password_hash = ?";
 
-	    try {
-	        conn = DatabaseConnection.getConnection();
+	    try (Connection conn = DatabaseConnection.getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
 
-	        String sql = "SELECT * FROM users WHERE username = ? AND password_hash = ?";
-	        PreparedStatement ps = conn.prepareStatement(sql);
 	        ps.setString(1, username);
-	        ps.setString(2, password); // hiện tại đang so plaintext
+	        ps.setString(2, password); // hiện tại so plaintext trong password_hash
 
-	        ResultSet result = ps.executeQuery();
+	        try (ResultSet rs = ps.executeQuery()) {
+	            if (rs.next()) {
+	                int userid = rs.getInt("user_id");              // ✅ đúng cột DB
+	                String uname = rs.getString("username");        // ✅ đúng cột DB
+	                String pass = rs.getString("password_hash");    // ✅ đúng cột DB
+	                String email = rs.getString("email");
+	                String phone = rs.getString("phone");
+	                String address = rs.getString("address");
+	                String role = rs.getString("role");
 
-	        if (result.next()) {
-	            int userid = result.getInt("userid");
-	            String uname = result.getString("username");
-	            String pass = result.getString("password");
-	            String email = result.getString("email");
-	            String phone = result.getString("phone");
-	            String address = result.getString("address");
-	            String role = result.getString("role");
-	            Date create_at = result.getDate("created_at");
+	                Timestamp ts = rs.getTimestamp("created_at");   // DATETIME
+	                Date createAt = (ts != null) ? new Date(ts.getTime()) : null; // ✅ về java.util.Date
 
-	            return new User(userid, uname, pass, email, phone, address, role, create_at);
+	
+	                return new User(userid, uname, pass, email, phone, address, role, createAt);
+
+	       
+	            }
 	        }
-
-	        result.close();
-	        ps.close();
 
 	    } catch (SQLException e) {
 	        e.printStackTrace();
-	    } finally {
-	        if (conn != null) {
-	            try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
-	        }
 	    }
 
-	    return null; // login thất bại
+	    return null;
 	}
 
 	
