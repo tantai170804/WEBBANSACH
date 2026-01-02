@@ -11,6 +11,7 @@
 <body>
 <jsp:include page="header.jsp" />
 <h2>Đăng nhập</h2>
+>>>>>>> 75098aff0fc7f529f8a7f12be0d21c363fe4c2d1
 <form method="post" action="${pageContext.request.contextPath}/login">
     <div>
         <input type="text"

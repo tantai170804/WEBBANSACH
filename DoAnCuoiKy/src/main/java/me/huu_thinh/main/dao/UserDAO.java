@@ -21,9 +21,9 @@ public class UserDAO {
 			Statement stmt = conn.createStatement();
 			ResultSet result = stmt.executeQuery("SELECT * FROM users;");
 		  while (result.next()) {
-			int userid = result.getInt("user_id");
+			int userid = result.getInt("userid");
 			String username = result.getString("username");
-			String password = result.getString("password_hash");
+			String password = result.getString("password");
 			String email = result.getString("email");
 			String phone = result.getString("phone");
 			String address = result.getString("address");
@@ -73,7 +73,7 @@ public class UserDAO {
 
 	// Tạo user mới (đơn giản): chỉ tạo username + password_hash + role + create_at
 	// fullName hiện DB của bạn KHÔNG có cột full_name, nên tạm thời bỏ qua fullName
-	public boolean createUser(String username, String password, String fullName) {
+	public boolean createUser(String username, String password) {
 	    Connection conn = null;
 
 	    try {
@@ -116,9 +116,9 @@ public class UserDAO {
 	        ResultSet result = ps.executeQuery();
 
 	        if (result.next()) {
-	            int userid = result.getInt("user_id");
+	            int userid = result.getInt("userid");
 	            String uname = result.getString("username");
-	            String pass = result.getString("password_hash");
+	            String pass = result.getString("password");
 	            String email = result.getString("email");
 	            String phone = result.getString("phone");
 	            String address = result.getString("address");

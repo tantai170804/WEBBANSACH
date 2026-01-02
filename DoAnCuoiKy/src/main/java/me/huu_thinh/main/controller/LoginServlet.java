@@ -1,5 +1,4 @@
 package me.huu_thinh.main.controller;
-
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -10,9 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import me.huu_thinh.main.model.User;
-import me.huu_thinh.main.model.service.LoginService;
-
-
+import me.huu_thinh.main.service.LoginService;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -29,7 +26,6 @@ public class LoginServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
@@ -47,7 +43,6 @@ public class LoginServlet extends HttpServlet {
 			request.setAttribute("username", username); // để giữ lại username
 			request.getRequestDispatcher("/html/login.jsp").forward(request, response);
 		}
-		
-		
+
 	}
 }

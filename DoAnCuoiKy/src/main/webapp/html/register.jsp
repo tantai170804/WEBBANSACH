@@ -38,13 +38,6 @@
     </div>
 
     <div>
-        <input type="text"
-               name="fullName"
-               placeholder="Tên đầy đủ"
-               value="${fullName}" />
-    </div>
-
-    <div>
         <button type="submit">Register</button>
     </div>
 
