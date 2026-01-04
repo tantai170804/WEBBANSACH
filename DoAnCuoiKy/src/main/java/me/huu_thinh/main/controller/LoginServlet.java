@@ -1,6 +1,6 @@
 package me.huu_thinh.main.controller;
-import java.io.IOException;
 
+import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,36 +14,41 @@ import me.huu_thinh.main.service.LoginService;
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
-	private final LoginService loginService = new LoginService();
+    private final LoginService loginService = new LoginService();
 
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		request.getRequestDispatcher("/html/login.jsp").forward(request, response);
-	}
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.getRequestDispatcher("/html/login.jsp").forward(request, response);
+    }
 
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-		request.setCharacterEncoding("UTF-8");
-		response.setCharacterEncoding("UTF-8");
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
 
-		String username = request.getParameter("username");
-		String password = request.getParameter("password");
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
 
-		User user = loginService.login(username, password);
+        User user = loginService.login(username, password);
 
-		if (user != null) {
-			HttpSession session = request.getSession(true);
-			session.setAttribute("currentUser", user);
-			response.sendRedirect(request.getContextPath() + "/html/home");
+        if (user != null) {
+            HttpSession session = request.getSession(true);
+            session.setAttribute("currentUser", user);
 
-		} else {
-			request.setAttribute("error", "Sai username hoặc password");
-			request.setAttribute("username", username); // để giữ lại username
-			request.getRequestDispatcher("/html/login.jsp").forward(request, response);
-		}
+            // ✅ phân quyền điều hướng
+            if ("admin".equalsIgnoreCase(user.getRole())) {
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/html/home");
+            }
+            return;
+        }
 
-	}
+        request.setAttribute("error", "Sai username hoặc password");
+        request.setAttribute("username", username);
+        request.getRequestDispatcher("/html/login.jsp").forward(request, response);
+    }
 }

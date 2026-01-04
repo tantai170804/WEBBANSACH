@@ -15,6 +15,15 @@ import me.huu_thinh.main.dto.BookViewDTO;
 import me.huu_thinh.main.model.Book;
 
 public class BookDAO {
+	
+	public int countAll() throws Exception {
+		String sql = "SELECT COUNT(*) FROM books";
+		try (Connection con = DatabaseConnection.getConnection();
+				PreparedStatement ps = con.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+			return rs.next() ? rs.getInt(1) : 0;
+		}
+	}
 
 	public static int countAllForAdmin() {
 		String sql = "SELECT COUNT(*) FROM books";

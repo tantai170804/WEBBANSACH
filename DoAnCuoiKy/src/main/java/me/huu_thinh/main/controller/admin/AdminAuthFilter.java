@@ -1,4 +1,5 @@
 package me.huu_thinh.main.controller.admin;
+
 import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -23,23 +24,23 @@ public class AdminAuthFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
 
         HttpSession session = request.getSession(false);
-        User user = (session != null)
+        User currentUser = (session != null)
                 ? (User) session.getAttribute("currentUser")
                 : null;
 
-        // ❌ Chưa đăng nhập
-        if (user == null) {
+        // 1️⃣ Chưa đăng nhập → về login
+        if (currentUser == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        // ❌ Không phải admin
-        if (!"admin".equals(user.getRole())) {
-            response.sendRedirect(request.getContextPath() + "/html/home");
+        // 2️⃣ Đã login nhưng KHÔNG phải admin → về trang user
+        if (!"admin".equalsIgnoreCase(currentUser.getRole())) {
+            response.sendRedirect(request.getContextPath() + "/");
             return;
         }
 
-        // ✅ Là admin
+        // 3️⃣ Là admin → cho đi tiếp
         chain.doFilter(req, res);
     }
 }
