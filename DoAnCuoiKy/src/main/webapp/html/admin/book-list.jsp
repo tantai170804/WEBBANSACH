@@ -231,6 +231,36 @@ form {
 			</tr>
 		</c:forEach>
 	</table>
+	<div
+		style="margin-top: 16px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+		<c:set var="base"
+			value="${pageContext.request.contextPath}/admin/books?size=${size}&page=" />
+
+		<c:if test="${page > 1}">
+			<a href="${base}${page-1}">« Trước</a>
+		</c:if>
+
+		<c:forEach begin="1" end="${totalPages}" var="p">
+			<c:choose>
+				<c:when test="${p == page}">
+					<strong
+						style="padding: 6px 10px; border: 1px solid #333; border-radius: 8px;">${p}</strong>
+				</c:when>
+				<c:otherwise>
+					<a
+						style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 8px; text-decoration: none;"
+						href="${base}${p}">${p}</a>
+				</c:otherwise>
+			</c:choose>
+		</c:forEach>
+
+		<c:if test="${page < totalPages}">
+			<a href="${base}${page+1}">Sau »</a>
+		</c:if>
+
+		<span style="color: #666; margin-left: 8px;"> Tổng:
+			${totalItems} sách </span>
+	</div>
 
 </body>
 </html>

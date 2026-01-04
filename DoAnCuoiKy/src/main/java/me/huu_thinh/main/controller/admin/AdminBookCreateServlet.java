@@ -21,6 +21,7 @@ public class AdminBookCreateServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
 		List<BookCategory> categories = BookCategoryDAO.getAll();
 		request.setAttribute("categories", categories);
 		// dùng chung 1 form cho create/edit

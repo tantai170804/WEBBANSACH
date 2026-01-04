@@ -15,46 +15,80 @@ import me.huu_thinh.main.dto.BookViewDTO;
 import me.huu_thinh.main.model.Book;
 
 public class BookDAO {
-	public static List<BookViewDTO> getAllForAdmin() {
-	    List<BookViewDTO> list = new ArrayList<>();
 
-	    String sql =
-	    	    "SELECT b.book_id, " +
-	    	    "       b.book_code, " +
-	    	    "       b.title, " +
-	    	    "       b.price, " +
-	    	    "       b.quantity_in_stock, " +
-	    	    "       b.can_show, " +
-	    	    "       c.name AS category_name " +
-	    	    "FROM books b " +
-	    	    "LEFT JOIN book_category c " +
-	    	    "       ON b.category_id = c.category_id " +
-	    	    "ORDER BY b.book_id DESC";
+	public static int countAllForAdmin() {
+		String sql = "SELECT COUNT(*) FROM books";
+		try (Connection c = DatabaseConnection.getConnection();
+				PreparedStatement ps = c.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
 
-
-	    try (Connection conn = DatabaseConnection.getConnection();
-	         PreparedStatement ps = conn.prepareStatement(sql);
-	         ResultSet rs = ps.executeQuery()) {
-
-	        while (rs.next()) {
-	            BookViewDTO dto = new BookViewDTO(
-	                rs.getInt("book_id"),
-	                rs.getString("book_code"),
-	                rs.getString("title"),
-	                rs.getDouble("price"),
-	                rs.getInt("quantity_in_stock"),
-	                rs.getString("category_name"),
-	                rs.getBoolean("can_show")
-	            );
-	            list.add(dto);
-	        }
-
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-
-	    return list;
+			if (rs.next())
+				return rs.getInt(1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
+
+	public static List<BookViewDTO> getPageForAdmin(int offset, int limit) {
+		List<BookViewDTO> list = new ArrayList<>();
+
+		String sql = "SELECT b.book_id, b.book_code, b.title, b.price, b.quantity_in_stock, b.can_show, "
+				+ "       c.name AS category_name " + "FROM books b "
+				+ "LEFT JOIN book_category c ON b.category_id = c.category_id " + "ORDER BY b.book_id DESC "
+				+ "LIMIT ? OFFSET ?";
+
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+			ps.setInt(1, limit);
+			ps.setInt(2, offset);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				while (rs.next()) {
+					BookViewDTO dto = new BookViewDTO();
+					dto.setBookId(rs.getInt("book_id"));
+					dto.setBookCode(rs.getString("book_code"));
+					dto.setTitle(rs.getString("title"));
+					dto.setPrice(rs.getDouble("price"));
+					dto.setQuantityInStock(rs.getInt("quantity_in_stock"));
+					dto.setCanShow(rs.getBoolean("can_show"));
+					dto.setCategoryName(rs.getString("category_name"));
+					list.add(dto);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return list;
+	}
+
+	public static List<BookViewDTO> getAllForAdmin() {
+		List<BookViewDTO> list = new ArrayList<>();
+
+		String sql = "SELECT b.book_id, " + "       b.book_code, " + "       b.title, " + "       b.price, "
+				+ "       b.quantity_in_stock, " + "       b.can_show, " + "       c.name AS category_name "
+				+ "FROM books b " + "LEFT JOIN book_category c " + "       ON b.category_id = c.category_id "
+				+ "ORDER BY b.book_id DESC";
+
+		try (Connection conn = DatabaseConnection.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+
+			while (rs.next()) {
+				BookViewDTO dto = new BookViewDTO(rs.getInt("book_id"), rs.getString("book_code"),
+						rs.getString("title"), rs.getDouble("price"), rs.getInt("quantity_in_stock"),
+						rs.getString("category_name"), rs.getBoolean("can_show"));
+				list.add(dto);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return list;
+	}
+
 	public static List<Book> getAll() {
 		Connection conn = null;
 		List<Book> resultList = new ArrayList<Book>();
@@ -91,11 +125,6 @@ public class BookDAO {
 			}
 		}
 		return resultList;
-	}
-
-
-	public static void delete(String id) {
-
 	}
 
 	public static Book findById(int id) {
