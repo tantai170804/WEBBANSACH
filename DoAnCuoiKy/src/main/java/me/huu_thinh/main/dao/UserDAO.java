@@ -6,153 +6,242 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 import me.huu_thinh.main.database.DatabaseConnection;
+import me.huu_thinh.main.dto.UserViewDTO;
 import me.huu_thinh.main.model.User;
 
 public class UserDAO {
-	public static List<User> getAll(){
+
+	public static boolean delete(int id) {
+		String sql = "DELETE FROM users WHERE user_id=?";
+		try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
+
+			ps.setInt(1, id);
+			return ps.executeUpdate() > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public static boolean update(User u) {
+		String sql = """
+				    UPDATE users
+				    SET email=?, phone=?, address=?, role=?
+				    WHERE user_id=?
+				""";
+		try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
+
+			ps.setString(1, u.getEmail());
+			ps.setString(2, u.getPhone());
+			ps.setString(3, u.getAddress());
+			ps.setString(4, u.getRole());
+			ps.setInt(5, u.getUserId());
+
+			return ps.executeUpdate() > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public static User findById(int id) {
+		String sql = """
+				    SELECT user_id, username, email, password_hash, phone, address, role, created_at
+				    FROM users
+				    WHERE user_id = ?
+				""";
+
+		try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
+
+			ps.setInt(1, id);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					return new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("email"),
+							rs.getString("password_hash"), // ✅ sửa đúng cột
+							rs.getString("phone"), rs.getString("address"), rs.getString("role"),
+							rs.getDate("created_at") // vẫn dùng Date
+					);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static List<UserViewDTO> getAllForAdmin() {
+		List<UserViewDTO> list = new ArrayList<>();
+		String sql = "SELECT user_id, username, email, phone, role, created_at " + "FROM users "
+				+ "ORDER BY user_id DESC";
+
+		try (Connection c = DatabaseConnection.getConnection();
+				PreparedStatement ps = c.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+
+			while (rs.next()) {
+				list.add(new UserViewDTO(rs.getInt("user_id"), rs.getString("username"), rs.getString("email"),
+						rs.getString("phone"), rs.getString("role"), rs.getDate("created_at")));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	public int countAll() throws Exception {
+		String sql = "SELECT COUNT(*) FROM users";
+		try (Connection con = DatabaseConnection.getConnection();
+				PreparedStatement ps = con.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+			return rs.next() ? rs.getInt(1) : 0;
+		}
+	}
+
+	public static List<User> getAll() {
 		Connection conn = null;
 		List<User> resultList = new ArrayList<User>();
 		try {
 			conn = DatabaseConnection.getConnection();
 			Statement stmt = conn.createStatement();
 			ResultSet result = stmt.executeQuery("SELECT * FROM users;");
-		  while (result.next()) {
-			int userid = result.getInt("userid");
-			String username = result.getString("username");
-			String password = result.getString("password");
-			String email = result.getString("email");
-			String phone = result.getString("phone");
-			String address = result.getString("address");
-			String role = result.getString("role");
-			Date create_at = result.getDate("created_at");
-			User student = new User(userid, username, password, email, phone, address, role, create_at);
-			resultList.add(student);
+			while (result.next()) {
+				int userid = result.getInt("userid");
+				String username = result.getString("username");
+				String password = result.getString("password");
+				String email = result.getString("email");
+				String phone = result.getString("phone");
+				String address = result.getString("address");
+				String role = result.getString("role");
+				Date create_at = result.getDate("created_at");
+				User student = new User(userid, username, password, email, phone, address, role, create_at);
+				resultList.add(student);
 			}
 			stmt.close();
-			} catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
-			} finally {
-			  try {
+		} finally {
+			try {
 				conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
-				}
 			}
+		}
 		return resultList;
 	}
+
 	// Kiểm tra username đã tồn tại chưa
 	public boolean existsByUsername(String username) {
-	    Connection conn = null;
+		Connection conn = null;
 
-	    try {
-	        conn = DatabaseConnection.getConnection();
-	        String sql = "SELECT 1 FROM users WHERE username = ? LIMIT 1";
-	        PreparedStatement ps = conn.prepareStatement(sql);
-	        ps.setString(1, username);
+		try {
+			conn = DatabaseConnection.getConnection();
+			String sql = "SELECT 1 FROM users WHERE username = ? LIMIT 1";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, username);
 
-	        ResultSet rs = ps.executeQuery();
-	        boolean exists = rs.next();
+			ResultSet rs = ps.executeQuery();
+			boolean exists = rs.next();
 
-	        rs.close();
-	        ps.close();
-	        return exists;
+			rs.close();
+			ps.close();
+			return exists;
 
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        return false;
-	    } finally {
-	        if (conn != null) {
-	            try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
-	        }
-	    }
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	// Tạo user mới (đơn giản): chỉ tạo username + password_hash + role + create_at
 	// fullName hiện DB của bạn KHÔNG có cột full_name, nên tạm thời bỏ qua fullName
 	public boolean createUser(String username, String password) {
-	    Connection conn = null;
+		Connection conn = null;
 
-	    try {
-	        conn = DatabaseConnection.getConnection();
+		try {
+			conn = DatabaseConnection.getConnection();
 
-	        String sql = "INSERT INTO users (username, password_hash, role, created_at) VALUES (?, ?, ?, ?)";
-	        PreparedStatement ps = conn.prepareStatement(sql);
+			String sql = "INSERT INTO users (username, password_hash, role, created_at) VALUES (?, ?, ?, ?)";
+			PreparedStatement ps = conn.prepareStatement(sql);
 
-	        ps.setString(1, username);
-	        ps.setString(2, password);          // đang để plaintext theo yêu cầu "đơn giản"
-	        ps.setString(3, "customer");            // role mặc định
-	        ps.setDate(4, new Date(System.currentTimeMillis())); // ngày tạo
+			ps.setString(1, username);
+			ps.setString(2, password); // đang để plaintext theo yêu cầu "đơn giản"
+			ps.setString(3, "customer"); // role mặc định
+			ps.setDate(4, new Date(System.currentTimeMillis())); // ngày tạo
 
-	        int rows = ps.executeUpdate();
-	        ps.close();
+			int rows = ps.executeUpdate();
+			ps.close();
 
-	        return rows > 0;
+			return rows > 0;
 
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        return false;
-	    } finally {
-	        if (conn != null) {
-	            try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
-	        }
-	    }
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
-	// Dùng cho login
+
 	public User findByUsernameAndPassword(String username, String password) {
-	    Connection conn = null;
+		String sql = "SELECT * FROM users WHERE username = ? AND password_hash = ?";
 
-	    try {
-	        conn = DatabaseConnection.getConnection();
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
-	        String sql = "SELECT * FROM users WHERE username = ? AND password_hash = ?";
-	        PreparedStatement ps = conn.prepareStatement(sql);
-	        ps.setString(1, username);
-	        ps.setString(2, password); // hiện tại đang so plaintext
+			ps.setString(1, username);
+			ps.setString(2, password); // hiện tại so plaintext trong password_hash
 
-	        ResultSet result = ps.executeQuery();
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					int userid = rs.getInt("user_id"); // ✅ đúng cột DB
+					String uname = rs.getString("username"); // ✅ đúng cột DB
+					String pass = rs.getString("password_hash"); // ✅ đúng cột DB
+					String email = rs.getString("email");
+					String phone = rs.getString("phone");
+					String address = rs.getString("address");
+					String role = rs.getString("role");
 
-	        if (result.next()) {
-	            int userid = result.getInt("userid");
-	            String uname = result.getString("username");
-	            String pass = result.getString("password");
-	            String email = result.getString("email");
-	            String phone = result.getString("phone");
-	            String address = result.getString("address");
-	            String role = result.getString("role");
-	            Date create_at = result.getDate("created_at");
+					Timestamp ts = rs.getTimestamp("created_at"); // DATETIME
+					Date createAt = (ts != null) ? new Date(ts.getTime()) : null; // ✅ về java.util.Date
 
-	            return new User(userid, uname, pass, email, phone, address, role, create_at);
-	        }
+					return new User(userid, uname, pass, email, phone, address, role, createAt);
 
-	        result.close();
-	        ps.close();
+				}
+			}
 
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    } finally {
-	        if (conn != null) {
-	            try { conn.close(); } catch (SQLException e) { e.printStackTrace(); }
-	        }
-	    }
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
-	    return null; // login thất bại
+		return null;
 	}
-
-	
 
 	public static void insert(User user) {
-		
+
 	}
-	public static void update(User user) {
-		
-	}
+
 	public static void delete(String id) {
-		
+
 	}
+
 	public static User findById(String id) {
 		return null;
 	}

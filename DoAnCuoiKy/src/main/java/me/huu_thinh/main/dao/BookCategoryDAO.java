@@ -1,9 +1,9 @@
 package me.huu_thinh.main.dao;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,41 +11,114 @@ import me.huu_thinh.main.database.DatabaseConnection;
 import me.huu_thinh.main.model.BookCategory;
 
 public class BookCategoryDAO {
-	public static List<BookCategory> getAll(){
-		Connection conn = null;
-		List<BookCategory> resultList = new ArrayList<BookCategory>();
-		try {
-			conn = DatabaseConnection.getConnection();
-			Statement stmt = conn.createStatement();
-			ResultSet result = stmt.executeQuery("SELECT * FROM book_category;");
-		  while (result.next()) {
-			int category_id = result.getInt("category_id");
-			String name = result.getString("name");
-			String description = result.getString("description");
-			BookCategory student = new BookCategory(category_id, name, description);
-			resultList.add(student);
+
+	public int countAll() throws Exception {
+		String sql = "SELECT COUNT(*) FROM book_category";
+		try (Connection con = DatabaseConnection.getConnection();
+				PreparedStatement ps = con.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+			return rs.next() ? rs.getInt(1) : 0;
+		}
+	}
+
+	public static List<BookCategory> getAll() {
+		List<BookCategory> list = new ArrayList<>();
+
+		String sql = "SELECT category_id, name, description FROM book_category";
+
+		try (Connection conn = DatabaseConnection.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+
+			while (rs.next()) {
+				BookCategory category = new BookCategory(rs.getInt("category_id"), rs.getString("name"),
+						rs.getString("description"));
+				list.add(category);
 			}
-			stmt.close();
-			} catch (SQLException e) {
+
+		} catch (SQLException e) {
 			e.printStackTrace();
-			} finally {
-			  try {
-				conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
+		}
+
+		return list;
+	}
+
+	public static BookCategory getById(int id) {
+		String sql = "SELECT category_id, name, description FROM book_category WHERE category_id = ?";
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+			ps.setInt(1, id);
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					return new BookCategory(rs.getInt("category_id"), rs.getString("name"),
+							rs.getString("description"));
 				}
 			}
-		return resultList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
-	public static void insert(BookCategory category) {
-		
+
+	public static boolean insert(BookCategory c) {
+		String sql = "INSERT INTO book_category(name, description) VALUES (?, ?)";
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+			ps.setString(1, c.getName());
+			ps.setString(2, c.getDescription());
+			return ps.executeUpdate() == 1;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
-	public static void update(BookCategory category) {
-		
+
+	public static boolean update(BookCategory c) {
+		String sql = "UPDATE book_category SET name = ?, description = ? WHERE category_id = ?";
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+			ps.setString(1, c.getName());
+			ps.setString(2, c.getDescription());
+			ps.setInt(3, c.getCategoryId());
+			return ps.executeUpdate() == 1;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
-	public static void delete(String id) {
-		
+
+	// Nếu category đang được books tham chiếu -> sẽ lỗi FK (không xóa được)
+	public static boolean delete(int id) {
+		String sql = "DELETE FROM book_category WHERE category_id = ?";
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+			ps.setInt(1, id);
+			return ps.executeUpdate() == 1;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
+
+	// tiện ích: check category có đang được dùng không
+	public static boolean isUsed(int id) {
+		String sql = "SELECT COUNT(*) FROM books WHERE category_id = ?";
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+			ps.setInt(1, id);
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next())
+					return rs.getInt(1) > 0;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 	public static BookCategory findById(String id) {
 		return null;
 	}

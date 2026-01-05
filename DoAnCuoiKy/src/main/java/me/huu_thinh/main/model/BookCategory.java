@@ -5,20 +5,40 @@ public class BookCategory {
 	private int categoryId;
 	private String name;
 	private String description;
+
+	public BookCategory() {
+
+	}
+
+	public void setCategoryId(int categoryId) {
+		this.categoryId = categoryId;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public BookCategory(int category_id, String name, String description) {
 		super();
 		this.categoryId = category_id;
 		this.name = name;
 		this.description = description;
 	}
+
 	public int getCategoryId() {
 		return categoryId;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public String getDescription() {
 		return description;
 	}
-	
+
 }

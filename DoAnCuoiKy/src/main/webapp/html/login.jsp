@@ -4,42 +4,74 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Đăng nhập</title>
-    <link href="${pageContext.request.contextPath}/css/login.css" rel="stylesheet" type="text/css" >
+  <meta charset="UTF-8">
+  <title>Đăng nhập</title>
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/auth.css">
 </head>
 <body>
-<jsp:include page="header.jsp" />
-<h2>Đăng nhập</h2>
->>>>>>> 75098aff0fc7f529f8a7f12be0d21c363fe4c2d1
-<form method="post" action="${pageContext.request.contextPath}/login">
-    <div>
-        <input type="text"
-               name="username"
-               placeholder="Tên đăng nhập"
-               value="${username}"
-               required />
+
+<div class="auth-wrap">
+  <div class="auth-card">
+
+    <div class="auth-header">
+      <span class="auth-brand">BOOK STORE</span>
+      <h1 class="auth-title">Đăng nhập</h1>
+      <p class="auth-sub">Vui lòng nhập tài khoản để tiếp tục</p>
     </div>
 
-    <div>
-        <input type="password"
-               name="password"
-               placeholder="Mật khẩu"
-               required
-               autocomplete="current-password" />
+    <div class="auth-body">
+      <c:if test="${not empty error}">
+        <div class="alert alert-danger">
+          <c:out value="${error}" />
+        </div>
+      </c:if>
+
+      <form class="form" method="post" action="${pageContext.request.contextPath}/login">
+        <div class="field">
+          <label>Tên đăng nhập</label>
+          <input class="input"
+                 type="text"
+                 name="username"
+                 placeholder="Nhập tên đăng nhập"
+                 value="${username}"
+                 required />
+        </div>
+
+        <div class="field">
+          <label>Mật khẩu</label>
+          <input class="input"
+                 type="password"
+                 name="password"
+                 placeholder="Nhập mật khẩu"
+                 required
+                 autocomplete="current-password" />
+        </div>
+
+        <div class="row">
+          <a class="link" href="${pageContext.request.contextPath}/forgot-password">
+            Quên mật khẩu?
+          </a>
+          <a class="link" href="${pageContext.request.contextPath}/register">
+            Đăng ký
+          </a>
+        </div>
+
+        <button class="btn btn-primary" type="submit">Đăng nhập</button>
+
+        <div class="divider">hoặc</div>
+
+        <a class="btn btn-outline" href="${pageContext.request.contextPath}/html/home">
+          ← Về trang chủ
+        </a>
+      </form>
     </div>
 
-    <div>
-        <button type="submit">Đăng nhập</button>
+    <div class="auth-footer">
+      Chưa có tài khoản? <a class="link" href="${pageContext.request.contextPath}/register">Đăng ký ngay</a>
     </div>
- 	
-    <c:if test="${not empty error}">
-        <p class="error">
-            <c:out value="${error}" />
-        </p>
-    </c:if>
-	<p>Chưa có tài khoản? <a href="${pageContext.request.contextPath}/register">Đăng ký ngay!</a></p>
-</form>
-<jsp:include page="footer.jsp" />
+
+  </div>
+</div>
+
 </body>
 </html>
