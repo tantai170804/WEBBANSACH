@@ -15,7 +15,7 @@ import me.huu_thinh.main.dto.BookViewDTO;
 import me.huu_thinh.main.model.Book;
 
 public class BookDAO {
-	
+
 	public int countAll() throws Exception {
 		String sql = "SELECT COUNT(*) FROM books";
 		try (Connection con = DatabaseConnection.getConnection();
@@ -99,41 +99,25 @@ public class BookDAO {
 	}
 
 	public static List<Book> getAll() {
-		Connection conn = null;
-		List<Book> resultList = new ArrayList<Book>();
-		try {
-			conn = DatabaseConnection.getConnection();
-			Statement stmt = conn.createStatement();
-			ResultSet result = stmt.executeQuery("SELECT * FROM books;");
-			while (result.next()) {
-				int bookid = result.getInt("book_id");
-				String bookcode = result.getString("book_code");
-				String title = result.getString("title");
-				String author = result.getString("author");
-				String publisher = result.getString("publisher");
-				int price = result.getInt("price");
-				int quantity_in_stock = result.getInt("quantity_in_stock");
-				String image_url = result.getString("image_url");
-				String description = result.getString("description");
-				int category_id = result.getInt("category_id");
-				boolean canshow = result.getBoolean("can_show");
-				Date create_at = result.getDate("created_at");
-				Date update_at = result.getDate("updated_at");
-				Book student = new Book(bookid, bookcode, title, author, publisher, price, quantity_in_stock, image_url,
-						description, category_id, canshow, create_at, update_at);
-				resultList.add(student);
+		List<Book> list = new ArrayList<>();
+		String sql = "SELECT * FROM books";
+
+		try (Connection conn = DatabaseConnection.getConnection();
+				PreparedStatement ps = conn.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+
+			while (rs.next()) {
+				Book b = new Book(rs.getInt("book_id"), rs.getString("book_code"), rs.getString("title"),
+						rs.getString("author"), rs.getString("publisher"), rs.getInt("price"),
+						rs.getInt("quantity_in_stock"), rs.getString("image_url"), rs.getString("description"),
+						rs.getInt("category_id"), rs.getBoolean("can_show"), rs.getDate("created_at"),
+						rs.getDate("updated_at"));
+				list.add(b);
 			}
-			stmt.close();
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
-		return resultList;
+		return list;
 	}
 
 	public static Book findById(int id) {

@@ -13,7 +13,7 @@ import me.huu_thinh.main.model.BookCategory;
 public class BookCategoryDAO {
 
 	public int countAll() throws Exception {
-		String sql = "SELECT COUNT(*) FROM categories";
+		String sql = "SELECT COUNT(*) FROM book_category";
 		try (Connection con = DatabaseConnection.getConnection();
 				PreparedStatement ps = con.prepareStatement(sql);
 				ResultSet rs = ps.executeQuery()) {

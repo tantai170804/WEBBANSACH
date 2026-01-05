@@ -11,10 +11,89 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.huu_thinh.main.database.DatabaseConnection;
+import me.huu_thinh.main.dto.UserViewDTO;
 import me.huu_thinh.main.model.User;
 
 public class UserDAO {
-	
+
+	public static boolean delete(int id) {
+		String sql = "DELETE FROM users WHERE user_id=?";
+		try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
+
+			ps.setInt(1, id);
+			return ps.executeUpdate() > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public static boolean update(User u) {
+		String sql = """
+				    UPDATE users
+				    SET email=?, phone=?, address=?, role=?
+				    WHERE user_id=?
+				""";
+		try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
+
+			ps.setString(1, u.getEmail());
+			ps.setString(2, u.getPhone());
+			ps.setString(3, u.getAddress());
+			ps.setString(4, u.getRole());
+			ps.setInt(5, u.getUserId());
+
+			return ps.executeUpdate() > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public static User findById(int id) {
+		String sql = """
+				    SELECT user_id, username, email, password_hash, phone, address, role, created_at
+				    FROM users
+				    WHERE user_id = ?
+				""";
+
+		try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
+
+			ps.setInt(1, id);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					return new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("email"),
+							rs.getString("password_hash"), // ✅ sửa đúng cột
+							rs.getString("phone"), rs.getString("address"), rs.getString("role"),
+							rs.getDate("created_at") // vẫn dùng Date
+					);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static List<UserViewDTO> getAllForAdmin() {
+		List<UserViewDTO> list = new ArrayList<>();
+		String sql = "SELECT user_id, username, email, phone, role, created_at " + "FROM users "
+				+ "ORDER BY user_id DESC";
+
+		try (Connection c = DatabaseConnection.getConnection();
+				PreparedStatement ps = c.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery()) {
+
+			while (rs.next()) {
+				list.add(new UserViewDTO(rs.getInt("user_id"), rs.getString("username"), rs.getString("email"),
+						rs.getString("phone"), rs.getString("role"), rs.getDate("created_at")));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
 	public int countAll() throws Exception {
 		String sql = "SELECT COUNT(*) FROM users";
 		try (Connection con = DatabaseConnection.getConnection();
@@ -156,10 +235,6 @@ public class UserDAO {
 	}
 
 	public static void insert(User user) {
-
-	}
-
-	public static void update(User user) {
 
 	}
 

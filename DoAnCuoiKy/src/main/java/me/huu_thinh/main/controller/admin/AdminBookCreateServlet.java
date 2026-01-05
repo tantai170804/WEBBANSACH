@@ -10,96 +10,88 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import me.huu_thinh.main.dao.BookCategoryDAO;
-import me.huu_thinh.main.dao.BookDAO;
 import me.huu_thinh.main.model.Book;
 import me.huu_thinh.main.model.BookCategory;
+import me.huu_thinh.main.service.BookService;
 
 @WebServlet("/admin/books/create")
 public class AdminBookCreateServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		List<BookCategory> categories = BookCategoryDAO.getAll();
-		request.setAttribute("categories", categories);
-		// dùng chung 1 form cho create/edit
-		request.setAttribute("mode", "create");
-		request.getRequestDispatcher("/html/admin/book-form.jsp").forward(request, response);
-	}
+    private final BookService bookService = new BookService();
 
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-		request.setCharacterEncoding("UTF-8");
-		response.setCharacterEncoding("UTF-8");
+        List<BookCategory> categories = BookCategoryDAO.getAll();
+        request.setAttribute("categories", categories);
+        request.setAttribute("mode", "create");
+        request.getRequestDispatcher("/html/admin/book-form.jsp").forward(request, response);
+    }
 
-		String bookCode = request.getParameter("bookCode");
-		String title = request.getParameter("title");
-		String author = request.getParameter("author");
-		String publisher = request.getParameter("publisher");
-		String priceStr = request.getParameter("price");
-		String qtyStr = request.getParameter("quantityInStock");
-		String imageUrl = request.getParameter("imageUrl");
-		String description = request.getParameter("description");
-		String categoryIdStr = request.getParameter("categoryId");
-		String canShowStr = request.getParameter("canShow");
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-		double price = 0;
-		int qty = 0;
-		Integer categoryId = null;
-		boolean canShow = "1".equals(canShowStr);
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
 
-		try {
-			if (priceStr != null && !priceStr.isBlank())
-				price = Double.parseDouble(priceStr.trim());
-			if (qtyStr != null && !qtyStr.isBlank())
-				qty = Integer.parseInt(qtyStr.trim());
-			if (categoryIdStr != null && !categoryIdStr.isBlank())
-				categoryId = Integer.valueOf(categoryIdStr.trim());
-		} catch (NumberFormatException ex) {
-			Book b = new Book();
-			b.setBookCode(bookCode);
-			b.setTitle(title);
-			b.setAuthor(author);
-			b.setPublisher(publisher);
-			b.setImageUrl(imageUrl);
-			b.setDescription(description);
-			b.setCategoryId(categoryId);
-			b.setCanShow(canShow);
+        Book b = new Book();
+        b.setBookCode(trim(request.getParameter("bookCode")));
+        b.setTitle(trim(request.getParameter("title")));
+        b.setAuthor(trim(request.getParameter("author")));
+        b.setPublisher(trim(request.getParameter("publisher")));
+        b.setImageUrl(trim(request.getParameter("imageUrl")));
+        b.setDescription(trim(request.getParameter("description")));
 
-			request.setAttribute("error", "Giá / số lượng / thể loại không hợp lệ!");
-			request.setAttribute("mode", "create");
-			request.setAttribute("book", b);
-			request.setAttribute("categories", BookCategoryDAO.getAll());
-			request.getRequestDispatcher("/html/admin/book-form.jsp").forward(request, response);
-			return;
-		}
+        // parse số an toàn
+        Double price = parseDouble(request.getParameter("price"));
+        Integer qty = parseInt(request.getParameter("quantityInStock"));
+        Integer categoryId = parseInt(request.getParameter("categoryId"));
 
-		Book b = new Book();
-		b.setBookCode(bookCode);
-		b.setTitle(title);
-		b.setAuthor(author);
-		b.setPublisher(publisher);
-		b.setPrice(price);
-		b.setQuantityInStock(qty);
-		b.setImageUrl(imageUrl);
-		b.setDescription(description);
-		b.setCategoryId(categoryId);
-		b.setCanShow(canShow);
+        b.setPrice(price != null ? price : 0);
+        b.setQuantityInStock(qty != null ? qty : 0);
+        b.setCategoryId(categoryId);
 
-		boolean ok = BookDAO.insert(b);
-		if (!ok) {
-			request.setAttribute("error", "Tạo sách thất bại!");
-			request.setAttribute("mode", "create");
-			request.setAttribute("book", b);
-			request.setAttribute("categories", BookCategoryDAO.getAll());
-			request.getRequestDispatcher("/html/admin/book-form.jsp").forward(request, response);
-			return;
-		}
+        boolean canShow = "1".equals(request.getParameter("canShow"));
+        b.setCanShow(canShow);
 
-		response.sendRedirect(request.getContextPath() + "/admin/books");
-	}
+        // validate + insert qua service
+        BookService.CreateResult result = bookService.create(b);
 
+        if (!result.isSuccess()) {
+            request.setAttribute("mode", "create");
+            request.setAttribute("book", b);
+            request.setAttribute("categories", BookCategoryDAO.getAll());
+            // gộp lỗi thành 1 chuỗi (hoặc bạn có thể show list)
+            request.setAttribute("error", String.join(" ", result.getErrors()));
+            request.getRequestDispatcher("/html/admin/book-form.jsp").forward(request, response);
+            return;
+        }
+
+        response.sendRedirect(request.getContextPath() + "/admin/books");
+    }
+
+    private String trim(String s) {
+        return s == null ? null : s.trim();
+    }
+
+    private Integer parseInt(String s) {
+        if (s == null || s.isBlank()) return null;
+        try {
+            return Integer.parseInt(s.trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private Double parseDouble(String s) {
+        if (s == null || s.isBlank()) return null;
+        try {
+            return Double.parseDouble(s.trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
 }

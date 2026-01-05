@@ -9,43 +9,30 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import me.huu_thinh.main.dao.BookDAO;
 import me.huu_thinh.main.dto.BookViewDTO;
+import me.huu_thinh.main.service.BookService;
 
 @WebServlet("/admin/books")
 public class AdminBookListServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Override
+    private final BookService bookService = new BookService();
+
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        int page = 1;
-        int size = 5;
+        int page = parseIntOrDefault(request.getParameter("page"), 1);
+        int size = parseIntOrDefault(request.getParameter("size"), 5);
 
-        String pageStr = request.getParameter("page");
-        String sizeStr = request.getParameter("size");
+        size = bookService.normalizeSize(size);
 
-        if (pageStr != null) {
-            try { page = Integer.parseInt(pageStr); } catch (NumberFormatException ignored) {}
-        }
-        if (sizeStr != null) {
-            try { size = Integer.parseInt(sizeStr); } catch (NumberFormatException ignored) {}
-        }
+        int totalItems = bookService.countAllForAdmin();
+        int totalPages = bookService.calcTotalPages(totalItems, size);
 
-        if (page < 1) page = 1;
-        if (size < 1) size = 5;
-        if (size > 50) size = 50;
+        page = bookService.clampPage(page, totalPages);
 
-        int totalItems = BookDAO.countAllForAdmin();
-        int totalPages = (int) Math.ceil(totalItems * 1.0 / size);
-
-        if (totalPages == 0) totalPages = 1;
-        if (page > totalPages) page = totalPages;
-
-        int offset = (page - 1) * size;
-
-        List<BookViewDTO> books = BookDAO.getPageForAdmin(offset, size);
+        List<BookViewDTO> books = bookService.getPageForAdmin(page, size);
 
         request.setAttribute("books", books);
         request.setAttribute("page", page);
@@ -56,11 +43,12 @@ public class AdminBookListServlet extends HttpServlet {
         request.getRequestDispatcher("/html/admin/book-list.jsp").forward(request, response);
     }
 
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
-
+    private int parseIntOrDefault(String value, int defaultValue) {
+        if (value == null) return defaultValue;
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
 }

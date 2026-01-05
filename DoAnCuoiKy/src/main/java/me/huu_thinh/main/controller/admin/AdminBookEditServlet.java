@@ -8,84 +8,120 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
 import me.huu_thinh.main.dao.BookCategoryDAO;
-import me.huu_thinh.main.dao.BookDAO;
 import me.huu_thinh.main.model.Book;
 import me.huu_thinh.main.model.BookCategory;
+import me.huu_thinh.main.service.BookService;
 
 @WebServlet("/admin/books/edit")
 public class AdminBookEditServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		List<BookCategory> categories = BookCategoryDAO.getAll();
-		request.setAttribute("categories", categories);
-		// dùng chung 1 form cho create/edit
-		String idStr = request.getParameter("id");
-		if (idStr == null || idStr.isBlank()) {
-			response.sendRedirect(request.getContextPath() + "/admin/books");
-			return;
-		}
+    private final BookService bookService = new BookService();
 
-		int id = Integer.parseInt(idStr);
-		Book book = BookDAO.findById(id);
-		if (book == null) {
-			response.sendRedirect(request.getContextPath() + "/admin/books");
-			return;
-		}
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-		request.setAttribute("mode", "edit");
-		request.setAttribute("book", book);
-		request.getRequestDispatcher("/html/admin/book-form.jsp").forward(request, response);
-	}
+        Integer id = parseInt(request.getParameter("id"));
+        if (id == null || id <= 0) {
+            response.sendRedirect(request.getContextPath() + "/admin/books");
+            return;
+        }
 
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+        Book book = bookService.findById(id);
+        if (book == null) {
+            response.sendRedirect(request.getContextPath() + "/admin/books");
+            return;
+        }
 
-		request.setCharacterEncoding("UTF-8");
+        List<BookCategory> categories = BookCategoryDAO.getAll();
+        request.setAttribute("categories", categories);
+        request.setAttribute("mode", "edit");
+        request.setAttribute("book", book);
+        request.getRequestDispatcher("/html/admin/book-form.jsp").forward(request, response);
+    }
 
-		int bookId = Integer.parseInt(request.getParameter("bookId"));
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-		String bookCode = request.getParameter("bookCode");
-		String title = request.getParameter("title");
-		String author = request.getParameter("author");
-		String publisher = request.getParameter("publisher");
-		String priceStr = request.getParameter("price");
-		String qtyStr = request.getParameter("quantityInStock");
-		String imageUrl = request.getParameter("imageUrl");
-		String description = request.getParameter("description");
-		String categoryIdStr = request.getParameter("categoryId");
-		String canShowStr = request.getParameter("canShow");
+        request.setCharacterEncoding("UTF-8");
 
-		double price = (priceStr == null || priceStr.isBlank()) ? 0 : Double.parseDouble(priceStr);
-		int qty = (qtyStr == null || qtyStr.isBlank()) ? 0 : Integer.parseInt(qtyStr);
-		Integer categoryId = (categoryIdStr == null || categoryIdStr.isBlank()) ? null : Integer.valueOf(categoryIdStr);
-		boolean canShow = (canShowStr == null) ? true : "1".equals(canShowStr) || "true".equalsIgnoreCase(canShowStr);
+        Integer bookId = parseInt(request.getParameter("bookId"));
+        if (bookId == null || bookId <= 0) {
+            response.sendRedirect(request.getContextPath() + "/admin/books");
+            return;
+        }
 
-		Book b = new Book();
-		b.setBookId(bookId);
-		b.setBookCode(bookCode);
-		b.setTitle(title);
-		b.setAuthor(author);
-		b.setPublisher(publisher);
-		b.setPrice(price);
-		b.setQuantityInStock(qty);
-		b.setImageUrl(imageUrl);
-		b.setDescription(description);
-		b.setCategoryId(categoryId);
-		b.setCanShow(canShow);
+        Book b = new Book();
+        b.setBookId(bookId);
+        b.setBookCode(trim(request.getParameter("bookCode")));
+        b.setTitle(trim(request.getParameter("title")));
+        b.setAuthor(trim(request.getParameter("author")));
+        b.setPublisher(trim(request.getParameter("publisher")));
+        b.setImageUrl(trim(request.getParameter("imageUrl")));
+        b.setDescription(trim(request.getParameter("description")));
 
-		boolean ok = BookDAO.update(b);
-		if (!ok) {
-			request.setAttribute("error", "Cập nhật thất bại!");
-			request.setAttribute("mode", "edit");
-			request.setAttribute("book", b);
-			request.getRequestDispatcher("/html/admin/book-form.jsp").forward(request, response);
-			return;
-		}
+        Double price = parseDouble(request.getParameter("price"));
+        Integer qty = parseInt(request.getParameter("quantityInStock"));
+        Integer categoryId = parseInt(request.getParameter("categoryId"));
 
-		response.sendRedirect(request.getContextPath() + "/admin/books");
-	}
+        // nếu người dùng nhập sai số → báo lỗi thay vì 500
+        if (request.getParameter("price") != null && !request.getParameter("price").isBlank() && price == null) {
+            backToForm(request, response, b, "Giá không hợp lệ!");
+            return;
+        }
+        if (request.getParameter("quantityInStock") != null && !request.getParameter("quantityInStock").isBlank() && qty == null) {
+            backToForm(request, response, b, "Số lượng không hợp lệ!");
+            return;
+        }
+
+        b.setPrice(price != null ? price : 0);
+        b.setQuantityInStock(qty != null ? qty : 0);
+        b.setCategoryId(categoryId);
+
+        String canShowStr = request.getParameter("canShow");
+        boolean canShow = (canShowStr == null) ? true : ("1".equals(canShowStr) || "true".equalsIgnoreCase(canShowStr));
+        b.setCanShow(canShow);
+
+        BookService.Result result = bookService.update(b);
+        if (!result.isSuccess()) {
+            backToForm(request, response, b, String.join(" ", result.getErrors()));
+            return;
+        }
+
+        response.sendRedirect(request.getContextPath() + "/admin/books");
+    }
+
+    private void backToForm(HttpServletRequest request, HttpServletResponse response, Book b, String error)
+            throws ServletException, IOException {
+        List<BookCategory> categories = BookCategoryDAO.getAll();
+        request.setAttribute("categories", categories);
+        request.setAttribute("error", error);
+        request.setAttribute("mode", "edit");
+        request.setAttribute("book", b);
+        request.getRequestDispatcher("/html/admin/book-form.jsp").forward(request, response);
+    }
+
+    private String trim(String s) {
+        return s == null ? null : s.trim();
+    }
+
+    private Integer parseInt(String s) {
+        if (s == null || s.isBlank()) return null;
+        try {
+            return Integer.parseInt(s.trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private Double parseDouble(String s) {
+        if (s == null || s.isBlank()) return null;
+        try {
+            return Double.parseDouble(s.trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
 }
