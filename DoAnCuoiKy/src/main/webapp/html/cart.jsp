@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -6,44 +7,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  	<title>Giỏ hàng !</title>
-  	<jsp:include page="header.jsp" />
+    <title>Giỏ Hàng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+        .cart-container {
+            margin: 20px;
+        }
+        .cart-item img {
+            max-width: 70px;
+            max-height: auto;
+            border-radius: 4px;
+        }
+       
+    </style>
+     <jsp:include page="header.jsp" />
 </head>
-
 <body>
-<div class="container">
-<div class="row">
-<div class="col-md-6">
-<h3 class="text-center text-sucess">Giỏ hàng của bạn</h3>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Thứ tự</th>
-      <th scope="col">Sách ID</th>
-      <th scope="col">Số lượng</th>
-    </tr>
-  </thead>
-   
-  <tbody>
-  	<c:if test="${empty carts}">
-      <tr>
-        <td colspan="3" class="text-center">
-          Giỏ hàng trống
-        </td>
-      </tr>
-    </c:if>
-   <c:forEach var="cart" items="${carts}" varStatus="st">
-    <tr>
-      <td>${st.count}</td>
-      <td>${cart.bookId}</td>
-      <td>${cart.quantity}</td>
-    </tr>
-    </c:forEach>
-  </tbody>
-  
-</table>
-</div>
-</div>
+
+<div class="container cart-container bg-white rounded shadow">
+    <div class="row">
+    <fmt:setLocale value="vi_VN"/>
+        <div class="col-md-8 p-4">
+            <h2>Giỏ Hàng Của Bạn</h2>
+             <c:forEach var="cartitem" items="${cartItems}" varStatus="st">
+            <div class="row my-3 border-bottom pb-3">
+                <div class="col-2">
+                    <img src="${pageContext.request.contextPath}/book_img/${cartitem.bookImageUrl}" class="img-thumbnail">
+                </div>
+                <div class="col-6">
+                    <p><strong>Tên sách: </strong>${cartitem.bookTitle}</p>
+                    <p>
+                        <strong>Số lượng:</strong>
+                        <input type="number" class="form-control d-inline w-25" value="${cartitem.quantity}" min="1"/>
+                    </p>
+                    <p>
+                        <strong >Tổng cộng giá: <fmt:formatNumber value="${cartitem.totalPrice}" type="currency"/></strong>
+                    </p>
+                    <button class="btn btn-warning btn-sm ms-1">Cập nhật</button>
+                    <button class="btn btn-danger btn-sm ms-2">Loại Bỏ</button>
+                </div>
+            </div>
+            </c:forEach>
+        </div>
+
+        <div class="col-md-4 p-4 border-start">
+            <h2>Bảng Thanh Toán</h2>
+            <p>Tổng cộng: <strong><fmt:formatNumber value="${cartTotalBookPrice}" type="currency"/></strong></p>
+            <p>Phí vận chuyển: <strong><fmt:formatNumber value="30000" type="currency"/></strong></p>
+            <h3>Tổng tiền: <strong><fmt:formatNumber value="${cartTotalAllPrice}" type="currency"/></strong></h3>
+            <button class="btn btn-primary">Thanh Toán</button>
+        </div>
+    </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+</html>
