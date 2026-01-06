@@ -38,7 +38,7 @@ public class LoginServlet extends HttpServlet {
             HttpSession session = request.getSession(true);
             session.setAttribute("currentUser", user);
 
-            // ✅ phân quyền điều hướng
+            //  phân quyền điều hướng
             if ("admin".equalsIgnoreCase(user.getRole())) {
                 response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             } else {

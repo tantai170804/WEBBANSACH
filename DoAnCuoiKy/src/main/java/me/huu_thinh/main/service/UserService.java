@@ -6,9 +6,7 @@ import me.huu_thinh.main.model.User;
 public class UserService {
 
 	    public boolean delete(int id, User currentUser) {
-	        // ❌ không cho admin tự xóa chính mình
 	        if (currentUser.getUserId() == id) return false;
-
 	        return UserDAO.delete(id);
 	    }
 
