@@ -14,7 +14,11 @@ import me.huu_thinh.main.service.LoginService;
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
-    private final LoginService loginService = new LoginService();
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 595403441301682633L;
+	private final LoginService loginService = new LoginService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

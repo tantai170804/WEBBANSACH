@@ -23,7 +23,7 @@
         <c:forEach var="bookview" items="${bookviews}">
        		
             	<div class="book"> 
-            		<a href="${pageContext.request.contextPath}/html/bookdetail?id=${bookview.book.bookId}">
+            		<a href="${pageContext.request.contextPath}/bookdetail?id=${bookview.book.bookId}">
             			<img src="${pageContext.request.contextPath}/book_img/${bookview.book.imageUrl}" alt="${bookview.book.title}" style="width: 100%; height: auto; border-radius: 5px;"> <!-- Hiển thị hình ảnh -->
                 	</a>
                 	<h3>${bookview.book.title}</h3>

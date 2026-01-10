@@ -8,7 +8,7 @@
     <h1>Chào Mừng Đến Với Cửa Hàng Bán Sách</h1>
     <nav>
         <a href="${pageContext.request.contextPath}/html/home">Trang Chủ</a>
-        <a href="${pageContext.request.contextPath}/html/randombook">Sách ngẫu nhiên</a>
+        <a href="${pageContext.request.contextPath}/randombook">Sách ngẫu nhiên</a>
         <a href="${pageContext.request.contextPath}/cart">Giỏ hàng</a>
         <c:if test="${empty sessionScope.currentUser}">
         <a href="${pageContext.request.contextPath}/login">Đăng nhập</a>
