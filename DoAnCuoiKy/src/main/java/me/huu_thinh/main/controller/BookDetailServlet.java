@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import me.huu_thinh.main.dao.BookDAO;
 import me.huu_thinh.main.model.Book;
 
-@WebServlet("/html/bookdetail")
+@WebServlet("/bookdetail")
 public class BookDetailServlet extends HttpServlet {
 	
 	
