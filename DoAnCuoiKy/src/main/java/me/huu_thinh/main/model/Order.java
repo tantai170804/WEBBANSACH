@@ -1,7 +1,9 @@
 package me.huu_thinh.main.model;
 
-public class Order {
+import java.sql.Timestamp; // Dùng Timestamp để lưu cả ngày lẫn giờ phút giây
 
+public class Order {
+	private int id;
 	private int userId;
 	private String fullName;
 	private String address;
@@ -9,50 +11,52 @@ public class Order {
 	private String paymentMethod;
 	private String status;
 	private double totalPrice;
-	
+	private Timestamp orderDate; // Thêm trường này
+
 	public Order() {
-			
 	}
-	
-	public Order(int userId,String fullName, String address,String phone, String paymentMethod,String status, double totalPrice) {
+
+	// 2. Constructor dùng để INSERT (Không cần ID và Ngày tạo - vì DB tự sinh)
+	public Order(int userId, String fullName, String address, String phone, String paymentMethod, String status,
+			double totalPrice) {
 		this.userId = userId;
 		this.fullName = fullName;
 		this.address = address;
+		this.phone = phone;
 		this.paymentMethod = paymentMethod;
-		this.totalPrice = totalPrice;
 		this.status = status;
+		this.totalPrice = totalPrice;
 	}
+
+	// 3. Constructor ĐẦY ĐỦ dùng để SELECT (Lấy từ DB lên để hiện thị)
+	public Order(int id, int userId, String fullName, String address, String phone, String paymentMethod, String status,
+			double totalPrice, Timestamp orderDate) {
+		this.id = id;
+		this.userId = userId;
+		this.fullName = fullName;
+		this.address = address;
+		this.phone = phone;
+		this.paymentMethod = paymentMethod;
+		this.status = status;
+		this.totalPrice = totalPrice;
+		this.orderDate = orderDate;
+	}
+
+	// --- GETTER & SETTER ---
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public int getUserId() {
 		return userId;
 	}
+
 	public void setUserId(int userId) {
 		this.userId = userId;
-	}
-	public String getAddress() {
-		return address;
-	}
-	public void setAddress(String address) {
-		this.address = address;
-	}
-	public String getPaymentMethod() {
-		return paymentMethod;
-	}
-	public void setPaymentMethod(String paymentMethod) {
-		this.paymentMethod = paymentMethod;
-	}
-	public double getTotalPrice() {
-		return totalPrice;
-	}
-	public void setTotalPrice(double totalPrice) {
-		this.totalPrice = totalPrice;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
 	}
 
 	public String getFullName() {
@@ -63,6 +67,14 @@ public class Order {
 		this.fullName = fullName;
 	}
 
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
 	public String getPhone() {
 		return phone;
 	}
@@ -71,8 +83,40 @@ public class Order {
 		this.phone = phone;
 	}
 
-	
-	
-	
-	
+	public String getPaymentMethod() {
+		return paymentMethod;
+	}
+
+	public void setPaymentMethod(String paymentMethod) {
+		this.paymentMethod = paymentMethod;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public double getTotalPrice() {
+		return totalPrice;
+	}
+
+	public void setTotalPrice(double totalPrice) {
+		this.totalPrice = totalPrice;
+	}
+
+	public Timestamp getOrderDate() {
+		return orderDate;
+	}
+
+	public void setOrderDate(Timestamp orderDate) {
+		this.orderDate = orderDate;
+	}
+
+	@Override
+	public String toString() {
+		return "Order [id=" + id + ", fullName=" + fullName + ", status=" + status + ", totalPrice=" + totalPrice + "]";
+	}
 }

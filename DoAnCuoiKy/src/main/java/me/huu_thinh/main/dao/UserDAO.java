@@ -16,6 +16,39 @@ import me.huu_thinh.main.model.User;
 
 public class UserDAO {
 
+	public List<User> findAll(int limit, int offset) {
+		List<User> list = new ArrayList<>();
+		// Sắp xếp ID giảm dần để User mới nhất hiện lên đầu
+		String sql = "SELECT * FROM users ORDER BY user_id DESC LIMIT ? OFFSET ?";
+
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+			ps.setInt(1, limit);
+			ps.setInt(2, offset);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				while (rs.next()) {
+					// Mapping dữ liệu từ DB sang Object
+					User u = new User();
+					u.setUserId(rs.getInt("user_id"));
+					u.setUserName(rs.getString("username"));
+					u.setEmail(rs.getString("email"));
+					u.setPhone(rs.getString("phone"));
+					u.setRole(rs.getString("role"));
+					// Lưu ý: password_hash thường không cần hiển thị ra danh sách
+					u.setPassword(rs.getString("password_hash"));
+					u.setAddress(rs.getString("address"));
+					u.setCreateAt(rs.getDate("created_at"));
+
+					list.add(u);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
 	public static boolean delete(int id) {
 		String sql = "DELETE FROM users WHERE user_id=?";
 		try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
@@ -234,8 +267,25 @@ public class UserDAO {
 		return null;
 	}
 
-	public static void insert(User user) {
+	public static boolean insert(User user) {
+		String sql = "INSERT INTO users (username, password_hash, email, phone, address, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+			ps.setString(1, user.getUserName());
+			ps.setString(2, user.getPassword()); // Lưu ý: Nên mã hóa password trước khi truyền vào đây
+			ps.setString(3, user.getEmail());
+			ps.setString(4, user.getPhone());
+			ps.setString(5, user.getAddress());
+			ps.setString(6, user.getRole() != null ? user.getRole() : "customer");
+			ps.setDate(7, new Date(System.currentTimeMillis()));
+
+			return ps.executeUpdate() > 0;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	public static void delete(String id) {

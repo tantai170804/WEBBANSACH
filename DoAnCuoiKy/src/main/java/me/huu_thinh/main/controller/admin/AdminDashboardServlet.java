@@ -10,8 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import me.huu_thinh.main.dao.BookCategoryDAO;
 import me.huu_thinh.main.dao.BookDAO;
-import me.huu_thinh.main.dao.PurchaseDAO;
 import me.huu_thinh.main.dao.UserDAO;
+// 1. Import OrderService
+import me.huu_thinh.main.service.OrderService;
 
 @WebServlet("/admin/dashboard")
 public class AdminDashboardServlet extends HttpServlet {
@@ -20,45 +21,52 @@ public class AdminDashboardServlet extends HttpServlet {
     private BookDAO bookDAO;
     private BookCategoryDAO categoryDAO;
     private UserDAO userDAO;
-    private PurchaseDAO purchaseDAO;
+    
+    // 2. Sử dụng OrderService thay vì PurchaseDAO
+    private OrderService orderService;
 
     @Override
     public void init() throws ServletException {
         bookDAO = new BookDAO();
         categoryDAO = new BookCategoryDAO();
         userDAO = new UserDAO();
-        purchaseDAO = new PurchaseDAO();
+        // Khởi tạo Service
+        orderService = new OrderService();
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        // 1) Các thống kê cơ bản
+        // 3. Các thống kê cơ bản
+        // Lưu ý: Đảm bảo các DAO này có hàm countAll() trả về int
         int totalBooks = safeCount(() -> bookDAO.countAll());
         int totalCategories = safeCount(() -> categoryDAO.countAll());
         int totalUsers = safeCount(() -> userDAO.countAll());
 
-        // 2) Nếu dự án có purchase/order thì bật thêm
-        int totalOrders = safeCount(() -> purchaseDAO.countAll());
+        // 4. Lấy tổng số đơn hàng từ OrderService
+        int totalOrders = safeCount(() -> orderService.getTotalOrders());
 
-        // 3) Đẩy sang JSP
+        // 5. Đẩy dữ liệu sang JSP
         req.setAttribute("totalBooks", totalBooks);
         req.setAttribute("totalCategories", totalCategories);
         req.setAttribute("totalUsers", totalUsers);
         req.setAttribute("totalOrders", totalOrders);
 
-        // Nếu bạn dùng activePage để highlight sidebar:
+        // Highlight menu sidebar
         req.setAttribute("activePage", "dashboard");
 
         req.getRequestDispatcher("/html/admin/dashboard.jsp").forward(req, resp);
     }
 
-    // Helper tránh vỡ trang nếu 1 DAO chưa làm xong
+    // --- Helper Methods ---
+
+    // Hàm an toàn: Nếu lỗi DB thì trả về 0 chứ không làm sập trang
     private int safeCount(CountSupplier supplier) {
         try {
             return supplier.get();
         } catch (Exception e) {
+            e.printStackTrace(); // In lỗi ra console để debug nếu cần
             return 0;
         }
     }

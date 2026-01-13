@@ -12,12 +12,42 @@ import me.huu_thinh.main.model.BookCategory;
 
 public class BookCategoryDAO {
 
-	public int countAll() throws Exception {
+	public static List<BookCategory> findAll(int limit, int offset) {
+		List<BookCategory> list = new ArrayList<>();
+
+		// Sắp xếp ID giảm dần để dữ liệu mới nhất lên đầu
+		String sql = "SELECT category_id, name, description FROM book_category "
+				+ "ORDER BY category_id DESC LIMIT ? OFFSET ?";
+
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+			ps.setInt(1, limit);
+			ps.setInt(2, offset);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				while (rs.next()) {
+					BookCategory category = new BookCategory(rs.getInt("category_id"), rs.getString("name"),
+							rs.getString("description"));
+					list.add(category);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	public static int countAll() {
 		String sql = "SELECT COUNT(*) FROM book_category";
 		try (Connection con = DatabaseConnection.getConnection();
 				PreparedStatement ps = con.prepareStatement(sql);
 				ResultSet rs = ps.executeQuery()) {
+
 			return rs.next() ? rs.getInt(1) : 0;
+
+		} catch (Exception e) { // Bắt Exception hoặc SQLException
+			e.printStackTrace();
+			return 0;
 		}
 	}
 
