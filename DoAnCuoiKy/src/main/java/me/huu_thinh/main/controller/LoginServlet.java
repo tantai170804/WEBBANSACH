@@ -14,7 +14,11 @@ import me.huu_thinh.main.service.LoginService;
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
-    private final LoginService loginService = new LoginService();
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 595403441301682633L;
+	private final LoginService loginService = new LoginService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -38,7 +42,7 @@ public class LoginServlet extends HttpServlet {
             HttpSession session = request.getSession(true);
             session.setAttribute("currentUser", user);
 
-            // ✅ phân quyền điều hướng
+            //  phân quyền điều hướng
             if ("admin".equalsIgnoreCase(user.getRole())) {
                 response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             } else {

@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import me.huu_thinh.main.dao.BookDAO;
 import me.huu_thinh.main.model.Book;
 
-@WebServlet("/html/randombook")
+@WebServlet("/randombook")
 public class RandomBookServlet extends HttpServlet {
     /**
 	 * 
