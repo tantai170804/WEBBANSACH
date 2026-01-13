@@ -2,12 +2,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
+<c:set var="activePage" value="orders" scope="request" />
+
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Quản lý Sách - Admin</title>
-
+<title>Chi tiết đơn hàng #${order.id}</title>
 <style>
 /* =========================
    ADMIN BASE (ĐÃ SỬA LỖI CÚ PHÁP)
@@ -20,7 +21,8 @@
 	--primary: #2563eb;
 	--danger: #ef4444;
 	--border: #e5e7eb;
-	--shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+	--shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px
+		rgba(0, 0, 0, 0.06);
 }
 
 * {
@@ -29,7 +31,8 @@
 
 body {
 	margin: 0;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+		Arial, sans-serif;
 	background: var(--bg);
 	color: var(--text);
 	-webkit-font-smoothing: antialiased; /* Giúp chữ sắc nét hơn */
@@ -206,8 +209,13 @@ body {
 }
 
 /* Helper classes */
-.text-right { text-align: right; }
-.text-center { text-align: center; }
+.text-right {
+	text-align: right;
+}
+
+.text-center {
+	text-align: center;
+}
 
 /* Badges */
 .badge {
@@ -227,8 +235,15 @@ body {
 	font-weight: 700;
 }
 
-.pill-green { background: #dcfce7; color: #166534; }
-.pill-gray { background: #f3f4f6; color: #9ca3af; }
+.pill-green {
+	background: #dcfce7;
+	color: #166534;
+}
+
+.pill-gray {
+	background: #f3f4f6;
+	color: #9ca3af;
+}
 
 /* =========================
    PAGINATION
@@ -267,124 +282,121 @@ body {
 
 <body>
 	<div class="admin-layout">
-		<c:set var="activePage" value="books" scope="request" />
-		
+
 		<jsp:include page="_sidebar.jsp" />
 
 		<div class="content">
+
 			<div class="page-header">
 				<div>
-					<h1>Danh sách sách</h1>
-					<p class="sub">Quản lý kho sách và danh mục sản phẩm</p>
+					<h1>Chi tiết đơn hàng ${order.id}</h1>
+					<p class="sub">Xem thông tin và cập nhật trạng thái</p>
 				</div>
-				<a class="btn btn-primary" href="${pageContext.request.contextPath}/admin/books/create"> 
-					+ Thêm sách 
-				</a>
+				<a href="${pageContext.request.contextPath}/admin/orders"
+					class="btn btn-outline"> ← Quay lại danh sách </a>
+			</div>
+
+			<div class="grid-2">
+
+				<div class="card">
+					<div class="card-body">
+						<h3 style="margin-bottom: 15px; font-size: 18px;">Thông tin
+							nhận hàng</h3>
+
+						<div class="info-row">
+							<span class="info-label">Người nhận:</span> ${order.fullName}
+						</div>
+						<div class="info-row">
+							<span class="info-label">Số điện thoại:</span> ${order.phone}
+						</div>
+						<div class="info-row">
+							<span class="info-label">Địa chỉ:</span> ${order.address}
+						</div>
+						<div class="info-row">
+							<span class="info-label">Phương thức:</span>
+							${order.paymentMethod}
+						</div>
+						<div class="info-row"
+							style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee;">
+							<span class="info-label">Tổng thanh toán:</span> <span
+								style="color: #ef4444; font-weight: bold; font-size: 1.2em;">
+								<fmt:formatNumber value="${order.totalPrice}" type="currency"
+									currencySymbol="₫" />
+							</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="card">
+					<div class="card-body">
+						<h3 style="margin-bottom: 15px; font-size: 18px;">Cập nhật
+							trạng thái</h3>
+
+						<form
+							action="${pageContext.request.contextPath}/admin/order-update"
+							method="POST">
+							<input type="hidden" name="id" value="${order.id}"> <label
+								style="display: block; margin-bottom: 8px; color: #666;">Trạng
+								thái hiện tại:</label> <select name="status" class="form-select">
+								<option value="PENDING"
+									${order.status == 'PENDING' ? 'selected' : ''}>Chờ xử
+									lý (PENDING)</option>
+								<option value="SHIPPING"
+									${order.status == 'SHIPPING' ? 'selected' : ''}>Đang
+									giao hàng (SHIPPING)</option>
+								<option value="SUCCESS"
+									${order.status == 'SUCCESS' ? 'selected' : ''}>Hoàn
+									thành (SUCCESS)</option>
+								<option value="CANCEL"
+									${order.status == 'CANCEL' ? 'selected' : ''}>Đã hủy
+									(CANCEL)</option>
+							</select>
+
+							<button type="submit" class="btn btn-primary"
+								style="background: #3b82f6; color: white;">Cập nhật
+								ngay</button>
+						</form>
+					</div>
+				</div>
 			</div>
 
 			<div class="card">
-				<table class="table">
-					<thead>
-						<tr>
-							<th style="width: 60px;">ID</th>
-							<th>Mã</th>
-							<th>Tên sách</th>
-							<th>Thể loại</th>
-							<th class="text-right">Giá bán</th>
-							<th class="text-center">Kho</th>
-							<th class="text-center">Trạng thái</th>
-							<th class="text-right">Hành động</th>
-						</tr>
-					</thead>
+				<div class="card-body">
+					<h3 style="margin-bottom: 15px; font-size: 18px;">Sản phẩm đã
+						mua</h3>
 
-					<tbody>
-						<c:forEach items="${books}" var="b">
+					<table class="table">
+						<thead>
 							<tr>
-								<td>${b.bookId}</td>
-								<td><span class="badge">${b.bookCode}</span></td>
-								<td class="title"><c:out value="${b.title}" /></td>
-								<td><c:out value="${b.categoryName}" /></td>
-								
-								<td class="text-right" style="font-weight: 700;">
-									<fmt:formatNumber value="${b.price}" type="currency" currencySymbol="đ" />
-								</td>
-								
-								<td class="text-center">
-									<c:if test="${b.quantityInStock == 0}">
-										<span style="color: #ef4444; font-weight: bold;">Hết</span>
-									</c:if>
-									<c:if test="${b.quantityInStock > 0}">
-										${b.quantityInStock}
-									</c:if>
-								</td>
-
-								<td class="text-center">
-									<c:choose>
-										<c:when test="${b.canShow}">
-											<span class="pill pill-green">Hiển thị</span>
-										</c:when>
-										<c:otherwise>
-											<span class="pill pill-gray">Ẩn</span>
-										</c:otherwise>
-									</c:choose>
-								</td>
-
-								<td class="text-right">
-									<a class="btn btn-sm btn-outline"
-									   href="${pageContext.request.contextPath}/admin/books/edit?id=${b.bookId}">
-									   Sửa
-									</a>
-
-									<form method="post"
-										  action="${pageContext.request.contextPath}/admin/books/delete"
-										  style="display: inline-block; margin-left: 4px;">
-										<input type="hidden" name="id" value="${b.bookId}" />
-										<button class="btn btn-sm btn-danger" type="submit"
-												onclick="return confirm('Bạn có chắc chắn muốn xóa sách này?')">
-											Xóa
-										</button>
-									</form>
-								</td>
+								<th style="width: 80px;">Hình ảnh</th>
+								<th>Tên sách</th>
+								<th>Đơn giá</th>
+								<th>Số lượng</th>
+								<th>Thành tiền</th>
 							</tr>
-						</c:forEach>
-						
-						<c:if test="${empty books}">
-							<tr>
-								<td colspan="8" class="text-center" style="padding: 30px; color: #9ca3af;">
-									Hiện chưa có cuốn sách nào.
-								</td>
-							</tr>
-						</c:if>
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							<c:forEach items="${items}" var="i">
+								<tr>
+									<td><img
+										src="${pageContext.request.contextPath}/${i.bookImage}"
+										class="book-thumb"
+										onerror="this.src='https://placehold.co/50x70?text=NoImg'">
+									</td>
+									<td class="title" style="vertical-align: middle;">${i.bookName}</td>
+									<td style="vertical-align: middle;"><fmt:formatNumber
+											value="${i.price}" type="currency" currencySymbol="₫" /></td>
+									<td style="vertical-align: middle;">${i.quantity}</td>
+									<td style="vertical-align: middle; font-weight: bold;"><fmt:formatNumber
+											value="${i.price * i.quantity}" type="currency"
+											currencySymbol="₫" /></td>
+								</tr>
+							</c:forEach>
+						</tbody>
+					</table>
+				</div>
 			</div>
 
-			<c:if test="${totalPages > 1}">
-				<div class="pagination">
-					<c:set var="base" value="${pageContext.request.contextPath}/admin/books?size=${size}&page=" />
-
-					<c:if test="${page > 1}">
-						<a class="page-btn" href="${base}${page-1}">« Trước</a>
-					</c:if>
-
-					<c:forEach begin="1" end="${totalPages}" var="p">
-						<c:choose>
-							<c:when test="${p == page}">
-								<span class="page-btn active">${p}</span>
-							</c:when>
-							<c:otherwise>
-								<a class="page-btn" href="${base}${p}">${p}</a>
-							</c:otherwise>
-						</c:choose>
-					</c:forEach>
-
-					<c:if test="${page < totalPages}">
-						<a class="page-btn" href="${base}${page+1}">Sau »</a>
-					</c:if>
-
-					<span class="page-meta">Tổng ${totalItems} sách</span>
-				</div>
-			</c:if>
 		</div>
 	</div>
 </body>

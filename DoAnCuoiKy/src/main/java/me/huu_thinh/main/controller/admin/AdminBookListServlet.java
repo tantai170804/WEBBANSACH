@@ -23,7 +23,7 @@ public class AdminBookListServlet extends HttpServlet {
             throws ServletException, IOException {
 
         int page = parseIntOrDefault(request.getParameter("page"), 1);
-        int size = parseIntOrDefault(request.getParameter("size"), 5);
+        int size = parseIntOrDefault(request.getParameter("size"), 10);
 
         size = bookService.normalizeSize(size);
 

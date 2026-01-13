@@ -2,21 +2,37 @@ package me.huu_thinh.main.model;
 
 public class OrderItem {
 
-	private int orderId;
-	private int bookId;
-	private int quantity;
-	private double price;
-	
+	private int id; // Khóa chính
+	private int orderId; // Mã đơn hàng
+	private int bookId; // Mã sách
+	private int quantity; // Số lượng
+	private double price; // Giá bán tại thời điểm mua
+
+	// Các thuộc tính phụ (Dùng để hiển thị ra giao diện, không lưu trực tiếp vào
+	// bảng order_items)
+	private String bookName;
+	private String bookImage;
+
+	// Constructor rỗng
 	public OrderItem() {
-		
 	}
 
+	// Constructor dùng khi insert (chưa có ID và tên sách)
 	public OrderItem(int orderId, int bookId, int quantity, double price) {
-		super();
 		this.orderId = orderId;
 		this.bookId = bookId;
 		this.quantity = quantity;
 		this.price = price;
+	}
+
+	// --- GETTER & SETTER ---
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public int getOrderId() {
@@ -50,5 +66,21 @@ public class OrderItem {
 	public void setPrice(double price) {
 		this.price = price;
 	}
-	
+
+	// Getter & Setter cho các thuộc tính hiển thị
+	public String getBookName() {
+		return bookName;
+	}
+
+	public void setBookName(String bookName) {
+		this.bookName = bookName;
+	}
+
+	public String getBookImage() {
+		return bookImage;
+	}
+
+	public void setBookImage(String bookImage) {
+		this.bookImage = bookImage;
+	}
 }
