@@ -338,16 +338,16 @@ body {
 							<input type="hidden" name="id" value="${order.id}"> <label
 								style="display: block; margin-bottom: 8px; color: #666;">Trạng
 								thái hiện tại:</label> <select name="status" class="form-select">
-								<option value="PENDING"
+								<option value="0"
 									${order.status == 'PENDING' ? 'selected' : ''}>Chờ xử
 									lý (PENDING)</option>
-								<option value="SHIPPING"
+								<option value="1"
 									${order.status == 'SHIPPING' ? 'selected' : ''}>Đang
 									giao hàng (SHIPPING)</option>
-								<option value="SUCCESS"
+								<option value="2"
 									${order.status == 'SUCCESS' ? 'selected' : ''}>Hoàn
 									thành (SUCCESS)</option>
-								<option value="CANCEL"
+								<option value="3"
 									${order.status == 'CANCEL' ? 'selected' : ''}>Đã hủy
 									(CANCEL)</option>
 							</select>
@@ -379,7 +379,7 @@ body {
 							<c:forEach items="${items}" var="i">
 								<tr>
 									<td><img
-										src="${pageContext.request.contextPath}/${i.bookImage}"
+										src="${pageContext.request.contextPath}/book_img/${i.bookImage}"
 										class="book-thumb"
 										onerror="this.src='https://placehold.co/50x70?text=NoImg'">
 									</td>

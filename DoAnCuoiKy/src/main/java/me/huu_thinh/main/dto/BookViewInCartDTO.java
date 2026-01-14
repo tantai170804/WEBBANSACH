@@ -1,15 +1,15 @@
-package me.huu_thinh.main.model;
+package me.huu_thinh.main.dto;
 
-public class BookView {
+import me.huu_thinh.main.model.Book;
 
+public class BookViewInCartDTO {
 	private Book book;
 	private boolean inCart;
-	public BookView(Book book) {
+	public BookViewInCartDTO(Book book) {
 		this.book = book;
 		this.inCart = false;
 	}
-	public BookView(Book book, boolean inCart) {
-		super();
+	public BookViewInCartDTO(Book book, boolean inCart) {
 		this.book = book;
 		this.inCart = inCart;
 	}
@@ -25,6 +25,5 @@ public class BookView {
 	public void setInCart(boolean inCart) {
 		this.inCart = inCart;
 	}
-	
 	
 }

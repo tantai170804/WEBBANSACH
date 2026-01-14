@@ -11,7 +11,8 @@ public class Order {
 	private String paymentMethod;
 	private String status;
 	private double totalPrice;
-	private Timestamp orderDate; // Thêm trường này
+	private Timestamp createdAt; 
+	private Timestamp updateAt; 
 
 	public Order() {
 	}
@@ -30,7 +31,7 @@ public class Order {
 
 	// 3. Constructor ĐẦY ĐỦ dùng để SELECT (Lấy từ DB lên để hiện thị)
 	public Order(int id, int userId, String fullName, String address, String phone, String paymentMethod, String status,
-			double totalPrice, Timestamp orderDate) {
+			double totalPrice, Timestamp createdAt, Timestamp updateAt) {
 		this.id = id;
 		this.userId = userId;
 		this.fullName = fullName;
@@ -39,7 +40,8 @@ public class Order {
 		this.paymentMethod = paymentMethod;
 		this.status = status;
 		this.totalPrice = totalPrice;
-		this.orderDate = orderDate;
+		this.createdAt = createdAt;
+		this.updateAt = updateAt;
 	}
 
 	// --- GETTER & SETTER ---
@@ -107,16 +109,24 @@ public class Order {
 		this.totalPrice = totalPrice;
 	}
 
-	public Timestamp getOrderDate() {
-		return orderDate;
+	public Timestamp getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setOrderDate(Timestamp orderDate) {
-		this.orderDate = orderDate;
+	public void setCreatedAt(Timestamp createdAt) {
+		this.createdAt = createdAt;
 	}
 
-	@Override
-	public String toString() {
-		return "Order [id=" + id + ", fullName=" + fullName + ", status=" + status + ", totalPrice=" + totalPrice + "]";
+	public Timestamp getUpdateAt() {
+		return updateAt;
 	}
+
+	public void setUpdateAt(Timestamp updateAt) {
+		this.updateAt = updateAt;
+	}
+
+
+
+
+	
 }

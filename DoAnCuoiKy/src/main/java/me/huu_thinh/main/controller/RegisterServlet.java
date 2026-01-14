@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import me.huu_thinh.main.service.RegisterService;
+import me.huu_thinh.main.util.PasswordEncoding;
 
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
@@ -40,9 +41,12 @@ public class RegisterServlet extends HttpServlet {
         // Giữ lại dữ liệu đã nhập để user khỏi nhập lại khi lỗi
         request.setAttribute("username", username);
 
-
+        // Mã hóa password trước khi lưu
+        String password_hash = PasswordEncoding.encodingPassword(password);
+        String comfirmpassword_hash = PasswordEncoding.encodingPassword(confirmPassword);
+        
         RegisterService.RegisterResult result =
-                registerService.register(username, password, confirmPassword);
+                registerService.register(username, password_hash, comfirmpassword_hash);
 
         if (result.isSuccess()) {
             // Đăng ký thành công -> về trang login

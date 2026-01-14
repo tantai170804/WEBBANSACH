@@ -28,14 +28,12 @@ public class UserDAO {
 
 			try (ResultSet rs = ps.executeQuery()) {
 				while (rs.next()) {
-					// Mapping dữ liệu từ DB sang Object
 					User u = new User();
 					u.setUserId(rs.getInt("user_id"));
 					u.setUserName(rs.getString("username"));
 					u.setEmail(rs.getString("email"));
 					u.setPhone(rs.getString("phone"));
 					u.setRole(rs.getString("role"));
-					// Lưu ý: password_hash thường không cần hiển thị ra danh sách
 					u.setPassword(rs.getString("password_hash"));
 					u.setAddress(rs.getString("address"));
 					u.setCreateAt(rs.getDate("created_at"));
@@ -81,7 +79,19 @@ public class UserDAO {
 		}
 		return false;
 	}
+	public static boolean updatePass(User u, String newpass_hash) {
+		String sql = " UPDATE users SET password_hash = ? WHERE user_id = ?";
+	try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
 
+		ps.setString(1, newpass_hash);
+		ps.setInt(2, u.getUserId());
+
+		return ps.executeUpdate() > 0;
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+	return false;
+	}
 	public static User findById(int id) {
 		String sql = """
 				    SELECT user_id, username, email, password_hash, phone, address, role, created_at
@@ -96,9 +106,9 @@ public class UserDAO {
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
 					return new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("email"),
-							rs.getString("password_hash"), // ✅ sửa đúng cột
+							rs.getString("password_hash"),
 							rs.getString("phone"), rs.getString("address"), rs.getString("role"),
-							rs.getDate("created_at") // vẫn dùng Date
+							rs.getDate("created_at")
 					);
 				}
 			}
@@ -146,7 +156,7 @@ public class UserDAO {
 			while (result.next()) {
 				int userid = result.getInt("userid");
 				String username = result.getString("username");
-				String password = result.getString("password");
+				String password = result.getString("password_hash");
 				String email = result.getString("email");
 				String phone = result.getString("phone");
 				String address = result.getString("address");
@@ -199,9 +209,7 @@ public class UserDAO {
 		}
 	}
 
-	// Tạo user mới (đơn giản): chỉ tạo username + password_hash + role + create_at
-	// fullName hiện DB của bạn KHÔNG có cột full_name, nên tạm thời bỏ qua fullName
-	public boolean createUser(String username, String password) {
+	public boolean createUser(String username, String password_hash) {
 		Connection conn = null;
 
 		try {
@@ -211,9 +219,9 @@ public class UserDAO {
 			PreparedStatement ps = conn.prepareStatement(sql);
 
 			ps.setString(1, username);
-			ps.setString(2, password); // đang để plaintext theo yêu cầu "đơn giản"
-			ps.setString(3, "customer"); // role mặc định
-			ps.setDate(4, new Date(System.currentTimeMillis())); // ngày tạo
+			ps.setString(2, password_hash);
+			ps.setString(3, "customer"); 
+			ps.setDate(4, new Date(System.currentTimeMillis()));
 
 			int rows = ps.executeUpdate();
 			ps.close();
@@ -234,28 +242,28 @@ public class UserDAO {
 		}
 	}
 
-	public User findByUsernameAndPassword(String username, String password) {
+	public User findByUsernameAndPassword(String username, String password_hash) {
 		String sql = "SELECT * FROM users WHERE username = ? AND password_hash = ?";
 
 		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
 			ps.setString(1, username);
-			ps.setString(2, password); // hiện tại so plaintext trong password_hash
+			ps.setString(2, password_hash); 
 
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
-					int userid = rs.getInt("user_id"); // ✅ đúng cột DB
-					String uname = rs.getString("username"); // ✅ đúng cột DB
-					String pass = rs.getString("password_hash"); // ✅ đúng cột DB
+					int userid = rs.getInt("user_id");
+					String uname = rs.getString("username");
+					String pass = rs.getString("password_hash");
 					String email = rs.getString("email");
 					String phone = rs.getString("phone");
 					String address = rs.getString("address");
 					String role = rs.getString("role");
 
-					Timestamp ts = rs.getTimestamp("created_at"); // DATETIME
-					Date createAt = (ts != null) ? new Date(ts.getTime()) : null; // ✅ về java.util.Date
+					Timestamp ts = rs.getTimestamp("created_at"); 
+					Date createAt = (ts != null) ? new Date(ts.getTime()) : null;
 
-					return new User(userid, uname, pass, email, phone, address, role, createAt);
+					return new User(userid, uname, email,pass, phone, address, role, createAt);
 
 				}
 			}
@@ -273,7 +281,7 @@ public class UserDAO {
 		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
 			ps.setString(1, user.getUserName());
-			ps.setString(2, user.getPassword()); // Lưu ý: Nên mã hóa password trước khi truyền vào đây
+			ps.setString(2, user.getPassword());
 			ps.setString(3, user.getEmail());
 			ps.setString(4, user.getPhone());
 			ps.setString(5, user.getAddress());

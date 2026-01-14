@@ -13,6 +13,10 @@ import me.huu_thinh.main.service.UserService;
 
 @WebServlet("/admin/users/delete")
 public class AdminUserDeleteServlet extends HttpServlet {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6939820310508876872L;
 	private final UserService userService = new UserService();
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)

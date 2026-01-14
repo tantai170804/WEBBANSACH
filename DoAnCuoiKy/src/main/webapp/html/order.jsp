@@ -22,7 +22,7 @@
 
           <p>
             <strong>Tổng tiền:</strong>
-            <span class="text-danger fw-bold">
+            <span class="text-danger fw-bold cart-all-total">
               <fmt:formatNumber value="${cartTotalAllPrice}" type="currency"/>
             </span>
           </p>
@@ -79,3 +79,4 @@
     </div>
   </div>
 </div>
+<script src="${pageContext.request.contextPath}/javascript/paymentOption.js"></script> <!-- Đường dẫn đến tệp JS -->

@@ -1,0 +1,40 @@
+.custom-navbar {
+    background: #343a40; /* Màu xanh dương */
+}
+
+.navbar-dark .navbar-brand,
+.navbar-dark .nav-link {
+    color: #ffffff; /* Màu chữ trắng */
+}
+
+.navbar-dark .nav-link:hover {
+    color: #ffc107; /* Màu vàng khi hover */
+}
+
+.dropdown-menu {
+    background-color: #ffffff; /* Màu nền trắng cho dropdown */
+}
+
+.dropdown-item {
+    color: #212529; /* Màu chữ cho các mục dropdown */
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa; /* Màu nền sáng khi hover */
+}
+
+.btn-light {
+    color: #007bff; /* Màu chữ cho nút giỏ hàng và tài khoản */
+}
+
+.btn-light:hover {
+    background-color: #e2e6ea; /* Màu nền khi hover */
+}
+
+.badge {
+    background-color: #dc3545; /* Màu đỏ cho badge số lượng */
+}
+main {
+            flex: 1; 
+        }
+

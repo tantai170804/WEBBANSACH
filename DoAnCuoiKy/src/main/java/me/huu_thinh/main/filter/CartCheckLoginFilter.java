@@ -14,7 +14,7 @@ import javax.servlet.http.HttpSession;
 
 //Filter cho cart, yêu cầu phải có đăng nhập thì mới có thao tác liên quan tới cart
 @WebFilter(urlPatterns = {"/cart"})
-public class CartFilter implements Filter {
+public class CartCheckLoginFilter implements Filter {
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -29,9 +29,10 @@ public class CartFilter implements Filter {
 
         if (user == null) {
             res.sendRedirect(req.getContextPath() + "/login");//Đưa về đăng nhập, nếu người dùng chưa đăng nhập.
-        } else {
-            chain.doFilter(request, response);
+            return;
         }
+            chain.doFilter(request, response);
+        
 	}
 
 }
