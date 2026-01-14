@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import me.huu_thinh.main.model.User;
 import me.huu_thinh.main.service.LoginService;
+import me.huu_thinh.main.util.PasswordEncoding;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -30,24 +31,17 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
-
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-
-        User user = loginService.login(username, password);
+     // Mã hóa password trước khi đăng nhập để xác nhận
+        String password_hash = PasswordEncoding.encodingPassword(password);
+        
+        User user = loginService.login(username, password_hash);
 
         if (user != null) {
             HttpSession session = request.getSession(true);
             session.setAttribute("currentUser", user);
-
-            //  phân quyền điều hướng
-            if ("admin".equalsIgnoreCase(user.getRole())) {
-                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
-            } else {
-                response.sendRedirect(request.getContextPath() + "/html/home");
-            }
+            response.sendRedirect(request.getContextPath() + "/html/home");
             return;
         }
 

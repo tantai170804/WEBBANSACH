@@ -13,7 +13,12 @@ import me.huu_thinh.main.dao.BookCategoryDAO;
 @WebServlet("/admin/categories/delete")
 public class AdminCategoryDeleteServlet extends HttpServlet {
 		
-	 @Override
+	 /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6895135920272306533L;
+
+	@Override
 	    protected void doPost(HttpServletRequest request, HttpServletResponse response)
 	            throws ServletException, IOException {
 

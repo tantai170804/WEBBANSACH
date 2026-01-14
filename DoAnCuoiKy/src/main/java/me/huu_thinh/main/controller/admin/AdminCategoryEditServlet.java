@@ -14,6 +14,11 @@ import me.huu_thinh.main.model.BookCategory;
 @WebServlet("/admin/categories/edit")
 public class AdminCategoryEditServlet extends HttpServlet {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5911450895435226311L;
+
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {

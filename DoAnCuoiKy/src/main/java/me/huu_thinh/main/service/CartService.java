@@ -1,12 +1,15 @@
 package me.huu_thinh.main.service;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import me.huu_thinh.main.dao.CartDAO;
+import me.huu_thinh.main.dto.BookViewInCartDTO;
 import me.huu_thinh.main.dto.CartItemDTO;
+import me.huu_thinh.main.dto.CartTotalResponseDTO;
 import me.huu_thinh.main.model.Book;
-import me.huu_thinh.main.model.BookView;
 import me.huu_thinh.main.model.Cart;
 
 public class CartService {
@@ -54,14 +57,14 @@ public class CartService {
 		 }
 		 return items;
 	}
-	public List<BookView> loadBookViewFromUser(int userId,List<Book> books){
+	public List<BookViewInCartDTO> loadBookViewFromUser(int userId,List<Book> books){
 		
-		List<BookView> views = new ArrayList<BookView>();
+		List<BookViewInCartDTO> views = new ArrayList<BookViewInCartDTO>();
 		if(books.isEmpty()) return views;
 		List<Cart> carts = getAllCartFromUser(userId);
 		if(carts.isEmpty()) return views;
 		for(Book b : books) {
-			BookView bookview = new BookView(b);
+			BookViewInCartDTO bookview = new BookViewInCartDTO(b);
 			for(Cart c : carts) {
 				if(c.getBookId() == b.getBookId()) {
 					bookview.setInCart(true);
@@ -79,5 +82,30 @@ public class CartService {
 
 	public boolean removeAllCart(int userId) {
 		return cartDAO.deleteAll(userId);
+	}
+
+	public boolean hasInCart(int userId, int bid) {
+		return getCurrentQuantity(userId, bid) >= 0;
+	}
+
+	public CartTotalResponseDTO updateCartToResponse(int userId,int bookId) {
+		List<CartItemDTO> carts = getAllCartItemFromUser(userId);
+		double totalPrice = carts.stream().mapToDouble(c -> c.getTotalPrice()).sum();
+		double totalAllPrice = totalPrice + 30000;
+		CartTotalResponseDTO dto = new CartTotalResponseDTO();
+		
+	    NumberFormat nf = NumberFormat.getCurrencyInstance(
+	    	    new Locale("vi", "VN")
+	    	);
+
+	    dto.setCartTotalFormatted(nf.format(totalPrice));
+	    dto.setCartAllTotalFormatted(nf.format(totalAllPrice));
+		carts.stream()
+        .filter(i -> i.getBookId() == bookId)
+        .findFirst()
+        .ifPresent(i -> {
+            dto.setItemTotalFormatted(nf.format(i.getTotalPrice()));
+        });
+		return dto;
 	}
 }

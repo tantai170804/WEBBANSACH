@@ -1,7 +1,6 @@
 package me.huu_thinh.main.controller;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,11 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import me.huu_thinh.main.model.Cart;
 import me.huu_thinh.main.model.Order;
 import me.huu_thinh.main.model.User;
-import me.huu_thinh.main.service.CartService;
-import me.huu_thinh.main.service.OrderService;
 import me.huu_thinh.main.service.OrderService;
 
 @WebServlet("/order")
@@ -33,7 +29,6 @@ public class OrderServlet extends HttpServlet {
 	
 	   protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	            throws ServletException, IOException {
-		   System.out.println("Get checking order");
 	   }
 	   protected void doPost(HttpServletRequest request, HttpServletResponse response)
 	            throws ServletException, IOException {

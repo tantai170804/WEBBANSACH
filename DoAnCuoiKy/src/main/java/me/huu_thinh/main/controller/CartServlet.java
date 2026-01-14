@@ -11,7 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.google.gson.Gson;
+
 import me.huu_thinh.main.dto.CartItemDTO;
+import me.huu_thinh.main.dto.CartTotalResponseDTO;
 import me.huu_thinh.main.model.Book;
 import me.huu_thinh.main.model.Cart;
 import me.huu_thinh.main.model.User;
@@ -68,10 +71,10 @@ public class CartServlet extends HttpServlet  {
     	loadCartAction(request,response);
     }
 
-	private void loadCartAction(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	private void loadCartAction(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 	      String action = request.getParameter("action");
 	      if (action == null) {
-	        response.sendRedirect("cart.jsp");
+	        doGet(request,response);
 	        return;
 	      }
 	      switch (action) {
@@ -87,12 +90,40 @@ public class CartServlet extends HttpServlet  {
 	      }
 	      
 	}
-	private void updateQuantity(HttpServletRequest request, HttpServletResponse response) {
-		// TODO Auto-generated method stub
-		
+	private void updateQuantity(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		int bid = Integer.parseInt(request.getParameter("bid"));
+		int quantity = Integer.parseInt(request.getParameter("quantity"));
+	     HttpSession session = request.getSession();
+	     User user = (User) session.getAttribute("currentUser");
+	     Book b = bookService.findById(bid);
+	     if(b == null) {
+	    	 session.setAttribute("snackbarMsg", "Lỗi không có sách, hãy tải lại trang ngay!");
+	    	 session.setAttribute("snackbarType", "error");
+	     } else {
+	    	 boolean check = cartService.updateCart(user.getUserId(), bid, quantity);
+	    	 if(check) {
+	    		 session.setAttribute("snackbarMsg", "Đã xóa khỏi giỏ hàng thành công!");
+	    		 session.setAttribute("snackbarType", "success");
+	    	 } else {
+	    		 session.setAttribute("snackbarMsg", "Lỗi khi cố xóa khỏi giỏ hàng");
+	    		 session.setAttribute("snackbarType", "error");
+	    	 }
+	     }
+	     response.setContentType("application/json");
+	     CartTotalResponseDTO dto = cartService.updateCartToResponse(user.getUserId(), bid);
+	     response.getWriter().print(new Gson().toJson(dto));
 	}
 
 	private void deleteFromCart(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//		System.out.println("Method = " + request.getMethod());
+//		System.out.println("QueryString = " + request.getQueryString());
+//		request.getParameterMap().forEach((k, v) -> {
+//		    System.out.println(k + " = " + Arrays.toString(v));
+//		});
+//		System.out.println("bid = [" + request.getParameter("bid") + "]");
+//		 if(request.getParameter("bid") != null) {
+//			 System.out.println(request.getParameter("bid"));
+//		 }
 		 int bid = Integer.parseInt(request.getParameter("bid"));
 	     HttpSession session = request.getSession();
 	     User user = (User) session.getAttribute("currentUser");
@@ -110,31 +141,54 @@ public class CartServlet extends HttpServlet  {
 	    		 session.setAttribute("snackbarType", "error");
 	    	 }
 	     }
-	     response.sendRedirect(request.getContextPath() + "/html/home");
+	     response.setContentType("application/json");
+	     CartTotalResponseDTO dto = cartService.updateCartToResponse(user.getUserId(), bid);
+	     response.getWriter().print(new Gson().toJson(dto));
 	}
 
 	//Them sach vao cart
 	private void addToCart(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		 int bid = Integer.parseInt(request.getParameter("bid"));
+		 int quantity = Integer.parseInt(request.getParameter("quantity"));
 	     HttpSession session = request.getSession();
 	     User user = (User) session.getAttribute("currentUser");
+	     int userId = user.getUserId();
 	     Book b = bookService.findById(bid);
+	     AddCartResult result = null;
 	     if(b == null) {
-	    	 session.setAttribute("snackbarMsg", "Lỗi không có sách, hãy tải lại trang ngay!");
-	    	 session.setAttribute("snackbarType", "error");
+	    	 result = new AddCartResult("Lỗi không có sách, reload trang lại ngay",2);
 	     } else {
-	    	 boolean check = cartService.addCart(user.getUserId(), bid, 1);
-	    	 if(check) {
-	    		 session.setAttribute("snackbarMsg", "Đã thêm vào giỏ hàng thành công!");
-	    		 session.setAttribute("snackbarType", "success");
+	    	 if(cartService.hasInCart(userId,bid)) {
+	    		 int currentq = cartService.getCurrentQuantity(userId, bid);
+	    		 cartService.updateCart(userId, bid, currentq+quantity);
+	    		 result = new AddCartResult("Đã cập nhật thêm sách, hãy xem tại giỏ hàng",1);
 	    	 } else {
-	    		 session.setAttribute("snackbarMsg", "Lỗi khi cố xóa khỏi giỏ hàng!");
-	    		 session.setAttribute("snackbarType", "error");
+	    		 cartService.addCart(userId, bid, quantity);
+	    		 result = new AddCartResult("Đã thêm sách vào giỏ hàng của bạn",0);
 	    	 }
 	     }
-	     response.sendRedirect(request.getContextPath() + "/html/home");
+	     response.setContentType("application/json");
+	     response.getWriter().print(new Gson().toJson(result));
 	}
 
-	
+	public static class AddCartResult{
+		private String message;
+		private int type;
+
+		public AddCartResult(String message, int type) {
+			this.message = message;
+			this.type = type;
+		}
+
+		public String getMessage() {
+			return message;
+		}
+
+		public int getType() {
+			return type;
+		}
+		
+		
+	}
 	
 }

@@ -15,7 +15,12 @@ import me.huu_thinh.main.model.BookCategory;
 @WebServlet("/admin/categories/create")
 public class AdminCategoryCreateServlet extends HttpServlet {
       
-	 @Override
+	 /**
+	 * 
+	 */
+	private static final long serialVersionUID = -5236581439810969922L;
+
+	@Override
 	    protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	            throws ServletException, IOException {
 

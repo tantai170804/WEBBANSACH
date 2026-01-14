@@ -54,7 +54,7 @@ public class OrderItemDAO {
 		List<OrderItem> list = new ArrayList<>();
 
 		// SQL JOIN với bảng books để lấy thêm tên sách và hình ảnh
-		String sql = "SELECT oi.*, b.name, b.image " + "FROM order_items oi " + "JOIN books b ON oi.book_id = b.id "
+		String sql = "SELECT oi.*, b.title, b.image_url " + "FROM order_items oi " + "JOIN books b ON oi.book_id = b.book_id "
 				+ "WHERE oi.order_id = ?";
 
 		Connection conn = null;
@@ -77,8 +77,8 @@ public class OrderItemDAO {
 
 				// Map thêm thông tin sách (Lấy từ bảng books nhờ lệnh JOIN)
 				// Hai dòng này bây giờ sẽ chạy tốt vì bạn đã update Model OrderItem
-				item.setBookName(rs.getString("name"));
-				item.setBookImage(rs.getString("image"));
+				item.setBookName(rs.getString("title"));
+				item.setBookImage(rs.getString("image_url"));
 
 				list.add(item);
 			}

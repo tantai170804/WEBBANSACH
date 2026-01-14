@@ -17,7 +17,7 @@ public class OrderDAO {
 	// --- 1. TẠO ĐƠN HÀNG (TRANSACTION) ---
 	public boolean createOrder(Order order, List<OrderItem> items) {
 		// SQL Insert Order (Không có email, note theo Model mới)
-		String sqlOrder = "INSERT INTO orders (user_id, fullname, phone_number, address, payment_method, status, total_money, order_date) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+		String sqlOrder = "INSERT INTO orders (user_id, fullname, phone, address, payment_method, status, total_price) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 		// SQL Insert Item (Chỉ lưu ID, giá, số lượng)
 		String sqlItem = "INSERT INTO order_items (order_id, book_id, quantity, price) VALUES (?, ?, ?, ?)";
@@ -37,7 +37,7 @@ public class OrderDAO {
 			psOrder.setString(3, order.getPhone());
 			psOrder.setString(4, order.getAddress());
 			psOrder.setString(5, order.getPaymentMethod());
-			psOrder.setInt(6, 0); // Mặc định 0: Chờ duyệt
+			psOrder.setString(6, getStatusString(0)); // Mặc định 0: Chờ duyệt
 			psOrder.setDouble(7, order.getTotalPrice());
 
 			int affectedRows = psOrder.executeUpdate();
@@ -85,7 +85,7 @@ public class OrderDAO {
 	// --- 2. LẤY CHI TIẾT ĐƠN HÀNG KÈM SẢN PHẨM ---
 	public Order getOrderById(int orderId) {
 		Order order = null;
-		String sql = "SELECT * FROM orders WHERE id = ?";
+		String sql = "SELECT * FROM orders WHERE order_id = ?";
 
 		// Query này JOIN với bảng BOOKS để lấy tên sách và ảnh hiển thị
 		String sqlItems = "SELECT oi.*, b.title, b.image_url FROM order_items oi "
@@ -102,17 +102,18 @@ public class OrderDAO {
 
 			if (rs.next()) {
 				order = new Order();
-				order.setId(rs.getInt("id"));
+				order.setId(rs.getInt("order_id"));
 				order.setUserId(rs.getInt("user_id"));
 				order.setFullName(rs.getString("fullname"));
-				order.setPhone(rs.getString("phone_number"));
+				order.setPhone(rs.getString("phone"));
 				order.setAddress(rs.getString("address"));
 				order.setPaymentMethod(rs.getString("payment_method"));
-				order.setTotalPrice(rs.getDouble("total_money"));
-				order.setOrderDate(rs.getTimestamp("order_date"));
+				order.setTotalPrice(rs.getDouble("total_price"));
+				order.setCreatedAt(rs.getTimestamp("created_at"));
+				order.setUpdateAt(rs.getTimestamp("updated_at"));
 
 				// Convert status int -> String
-				order.setStatus(getStatusString(rs.getInt("status")));
+				order.setStatus(rs.getString("status"));
 
 				// B. Lấy danh sách Items (đã kèm tên sách từ bảng books)
 				PreparedStatement psItem = conn.prepareStatement(sqlItems);
@@ -146,7 +147,7 @@ public class OrderDAO {
 
 			while (rs.next()) {
 				OrderItem item = new OrderItem();
-				item.setId(rs.getInt("id"));
+				item.setId(rs.getInt("order_item_id"));
 				item.setOrderId(rs.getInt("order_id"));
 				item.setBookId(rs.getInt("book_id"));
 				item.setQuantity(rs.getInt("quantity"));
@@ -167,7 +168,7 @@ public class OrderDAO {
 	// --- 4. LẤY TẤT CẢ ĐƠN HÀNG (ADMIN) ---
 	public List<Order> getAllOrders() {
 		List<Order> list = new ArrayList<>();
-		String sql = "SELECT * FROM orders ORDER BY id DESC";
+		String sql = "SELECT * FROM orders ORDER BY order_id DESC";
 
 		try (Connection conn = DatabaseConnection.getConnection();
 				PreparedStatement ps = conn.prepareStatement(sql);
@@ -175,15 +176,16 @@ public class OrderDAO {
 
 			while (rs.next()) {
 				Order order = new Order();
-				order.setId(rs.getInt("id"));
+				order.setId(rs.getInt("order_id"));
 				order.setUserId(rs.getInt("user_id"));
 				order.setFullName(rs.getString("fullname"));
-				order.setPhone(rs.getString("phone_number"));
+				order.setPhone(rs.getString("phone"));
 				order.setAddress(rs.getString("address"));
-				order.setTotalPrice(rs.getDouble("total_money"));
+				order.setTotalPrice(rs.getDouble("total_price"));
 				order.setPaymentMethod(rs.getString("payment_method"));
-				order.setOrderDate(rs.getTimestamp("order_date"));
-				order.setStatus(getStatusString(rs.getInt("status")));
+				order.setCreatedAt(rs.getTimestamp("created_at"));
+				order.setUpdateAt(rs.getTimestamp("updated_at"));
+				order.setStatus(rs.getString("status"));
 				list.add(order);
 			}
 		} catch (SQLException e) {
@@ -191,12 +193,47 @@ public class OrderDAO {
 		}
 		return list;
 	}
+	public List<Order> getAllOrdersFromUser(int userId) {
+		List<Order> list = new ArrayList<>();
+		String sql = "SELECT * FROM orders WHERE user_id = ? ORDER BY order_id DESC";
+		Connection conn = null;
+		try {
+			conn = DatabaseConnection.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1, userId);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				Order order = new Order();
+				order.setId(rs.getInt("order_id"));
+				order.setUserId(rs.getInt("user_id"));
+				order.setFullName(rs.getString("fullname"));
+				order.setPhone(rs.getString("phone"));
+				order.setAddress(rs.getString("address"));
+				order.setTotalPrice(rs.getDouble("total_price"));
+				order.setPaymentMethod(rs.getString("payment_method"));
+				order.setCreatedAt(rs.getTimestamp("created_at"));
+				order.setUpdateAt(rs.getTimestamp("updated_at"));
+				order.setStatus(rs.getString("status"));
+				list.add(order);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return list;
+	}
 
 	// --- 5. CẬP NHẬT TRẠNG THÁI ---
 	public void updateStatus(int orderId, int status) {
-		String sql = "UPDATE orders SET status = ? WHERE id = ?";
+		String sql = "UPDATE orders SET status = ? WHERE order_id = ?";
 		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-			ps.setInt(1, status);
+			ps.setString(1, getStatusString(status));
 			ps.setInt(2, orderId);
 			ps.executeUpdate();
 		} catch (SQLException e) {
@@ -205,20 +242,7 @@ public class OrderDAO {
 	}
 
 	// --- UTILS ---
-	private String getStatusString(int status) {
-		switch (status) {
-		case 0:
-			return "Chờ duyệt";
-		case 1:
-			return "Đang vận chuyển";
-		case 2:
-			return "Đã giao";
-		case 3:
-			return "Đã hủy";
-		default:
-			return "Không xác định";
-		}
-	}
+	
 
 	private void closeResources(Connection conn, PreparedStatement ps1, PreparedStatement ps2) {
 		try {
@@ -253,7 +277,7 @@ public class OrderDAO {
 	public List<Order> findWithPagination(int limit, int offset) {
 		List<Order> list = new ArrayList<>();
 		// Sắp xếp ID giảm dần để đơn mới nhất lên đầu
-		String sql = "SELECT * FROM orders ORDER BY id DESC LIMIT ? OFFSET ?";
+		String sql = "SELECT * FROM orders ORDER BY order_id DESC LIMIT ? OFFSET ?";
 
 		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -263,17 +287,17 @@ public class OrderDAO {
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
 				Order order = new Order();
-				order.setId(rs.getInt("id"));
+				order.setId(rs.getInt("order_id"));
 				order.setUserId(rs.getInt("user_id"));
 				order.setFullName(rs.getString("fullname"));
-				order.setPhone(rs.getString("phone_number"));
+				order.setPhone(rs.getString("phone"));
 				order.setAddress(rs.getString("address"));
-				order.setTotalPrice(rs.getDouble("total_money"));
+				order.setTotalPrice(rs.getDouble("total_price"));
 				order.setPaymentMethod(rs.getString("payment_method"));
-				order.setOrderDate(rs.getTimestamp("order_date"));
-
+				order.setCreatedAt(rs.getTimestamp("created_at"));
+				order.setUpdateAt(rs.getTimestamp("updated_at"));
 				// Chuyển status từ số sang chữ
-				order.setStatus(getStatusString(rs.getInt("status")));
+				order.setStatus(rs.getString("status"));
 
 				list.add(order);
 			}
@@ -282,7 +306,6 @@ public class OrderDAO {
 		}
 		return list;
 	}
-
 	public int insert(Order o) {
 		String sql = "INSERT INTO orders"
 				+ "(user_id, fullname,address,phone,total_price, payment_method,status) VALUES (?, ?, ?, ?, ?, ?,?)";
@@ -296,7 +319,7 @@ public class OrderDAO {
 			ps.setString(4, o.getPhone());
 			ps.setDouble(5, o.getTotalPrice());
 			ps.setString(6, o.getPaymentMethod());
-			ps.setString(7, "PENDING");
+			ps.setString(7, getStatusString(0));
 			ps.executeUpdate();
 			ResultSet rs = ps.getGeneratedKeys();
 			if (rs.next()) {
@@ -314,5 +337,19 @@ public class OrderDAO {
 			}
 		}
 		return -1;
+	}
+	private String getStatusString(int status) {
+		switch (status) {
+		case 0:
+			return "PENDING";
+		case 1:
+			return "SHIPPING";
+		case 2:
+			return "SUCCESS";
+		case 3:
+			return "CANCEL";
+		default:
+			return "UNKNOWN";
+		}
 	}
 }
