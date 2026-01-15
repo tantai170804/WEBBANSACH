@@ -91,14 +91,16 @@ public class CartService {
 	public CartTotalResponseDTO updateCartToResponse(int userId,int bookId) {
 		List<CartItemDTO> carts = getAllCartItemFromUser(userId);
 		double totalPrice = carts.stream().mapToDouble(c -> c.getTotalPrice()).sum();
-		double totalAllPrice = totalPrice + 30000;
+		double shippingPrice = totalPrice > 0 ? 20000 : 0;
+		double totalAllPrice = totalPrice + shippingPrice;
 		CartTotalResponseDTO dto = new CartTotalResponseDTO();
 		
 	    NumberFormat nf = NumberFormat.getCurrencyInstance(
 	    	    new Locale("vi", "VN")
 	    	);
-
+	    
 	    dto.setCartTotalFormatted(nf.format(totalPrice));
+	    dto.setCartShippingPrice(nf.format(shippingPrice));
 	    dto.setCartAllTotalFormatted(nf.format(totalAllPrice));
 		carts.stream()
         .filter(i -> i.getBookId() == bookId)

@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Đăng nhập</title>
+<title>Quên mật khẩu</title>
 <style>
 :root{
   --bg: #f5f7fb;
@@ -220,8 +220,8 @@ body{
 
 			<div class="auth-header">
 				<span class="auth-brand">WEB BÁN SÁCH</span>
-				<h1 class="auth-title">Đăng nhập</h1>
-				<p class="auth-sub">Vui lòng nhập tài khoản để tiếp tục</p>
+				<h1 class="auth-title">Quên mật khẩu</h1>
+				<p class="auth-sub">Hãy nhập tên đăng nhập để được gửi gmail</p>
 			</div>
 
 			<div class="auth-body">
@@ -232,38 +232,22 @@ body{
 				</c:if>
 
 				<form class="form" method="post"
-					action="${pageContext.request.contextPath}/login">
+					action="${pageContext.request.contextPath}/forgotpassword">
 					<div class="field">
 						<label>Tên đăng nhập</label> <input class="input" type="text"
 							name="username" placeholder="Nhập tên đăng nhập"
 							value="${username}" required />
 					</div>
+					
 
-					<div class="field">
-						<label>Mật khẩu</label> <input class="input" type="password"
-							name="password" placeholder="Nhập mật khẩu" required
-							autocomplete="current-password" />
-					</div>
+					<button class="btn btn-primary" type="submit">Gửi mật khẩu qua gmail</button>
 
-					<div class="row">
-						<a class="link"
-							href="${pageContext.request.contextPath}/forgotpassword">
-							Quên mật khẩu? </a>
-					</div>
-
-					<button class="btn btn-primary" type="submit">Đăng nhập</button>
-
-					<div class="divider">hoặc</div>
-
-					<a class="btn btn-outline"
-						href="${pageContext.request.contextPath}/html/home"> ← Về
-						trang chủ </a>
 				</form>
 			</div>
 
 			<div class="auth-footer">
-				Chưa có tài khoản? <a class="link"
-					href="${pageContext.request.contextPath}/register">Đăng ký ngay</a>
+				Đã biết mật khẩu? <a class="link"
+					href="${pageContext.request.contextPath}/login">Đăng nhập</a>
 			</div>
 
 		</div>

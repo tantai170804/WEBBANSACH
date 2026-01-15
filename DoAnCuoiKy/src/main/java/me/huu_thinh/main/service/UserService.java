@@ -14,8 +14,11 @@ public class UserService {
 	    public boolean update(User u) {
 	        if (u.getUserId() <= 0) return false;
 	        if (u.getRole() == null || u.getRole().isBlank()) return false;
-
 	        return UserDAO.update(u);
+	    }
+	    
+	    public User getUserFromName(String name) {
+	    	return UserDAO.findByUserName(name);
 	    }
 	    
 	    public int updatePassword(int user_id,String password, String newpass, String confirmpass) {

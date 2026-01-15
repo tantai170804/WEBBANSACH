@@ -69,7 +69,7 @@
             <strong class="cart-total"><fmt:formatNumber value="${cartTotalBookPrice}" type="currency"/></strong>
             </span>
             </p>
-            <p>Phí vận chuyển: <strong><fmt:formatNumber value="30000" type="currency"/></strong></p>
+            <p>Phí vận chuyển: <strong class="cart-ship"><fmt:formatNumber value="${cartShipPrice}" type="currency"/></strong></p>
             <h3>Tổng tiền: 
             <strong  class="cart-all-total" ><fmt:formatNumber value="${cartTotalAllPrice}" type="currency"/></strong>
             </h3>
@@ -103,6 +103,7 @@ document.querySelectorAll(".btn-update").forEach(btn => {
         .then(data => {
             item.querySelector(".item-total").innerText = data.itemTotalFormatted;
             document.getElementsByClassName("cart-total")[0].innerText = data.cartTotalFormatted;
+            document.getElementsByClassName("cart-ship")[0].innerText = data.cartShippingPrice;
             document.getElementsByClassName("cart-all-total")[0].innerText = data.cartAllTotalFormatted;
             document.getElementsByClassName("cart-all-total")[1].innerText = data.cartAllTotalFormatted;
             showToast("Đã cập nhật khỏi giỏ hàng thành công");
@@ -122,6 +123,7 @@ document.querySelectorAll(".btn-remove").forEach(btn => {
         .then(data => {
             item.remove();
             document.getElementsByClassName("cart-total")[0].innerText = data.cartTotalFormatted;
+            document.getElementsByClassName("cart-ship")[0].innerText = data.cartShippingPrice;
             document.getElementsByClassName("cart-all-total")[0].innerText = data.cartAllTotalFormatted;
             document.getElementsByClassName("cart-all-total")[1].innerText = data.cartAllTotalFormatted;
             showToast("Đã xóa khỏi giỏ hàng thành công");

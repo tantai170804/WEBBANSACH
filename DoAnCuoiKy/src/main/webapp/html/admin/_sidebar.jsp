@@ -28,6 +28,10 @@
 		href="${pageContext.request.contextPath}/admin/users"> 
 		👤 Quản lý user 
 	</a>
+	<a class="nav-item ${activePage == 'image' ? 'active' : ''}"
+		href="${pageContext.request.contextPath}/admin/image"> 
+		Quản lý hình ảnh 
+	</a>
 
 
 	<div class="divider"></div>
