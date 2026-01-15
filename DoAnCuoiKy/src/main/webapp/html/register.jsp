@@ -242,7 +242,7 @@ body {
 		<div class="auth-card">
 
 			<div class="auth-header">
-				<span class="auth-brand">BOOK STORE</span>
+				<span class="auth-brand">WEB BÁN SÁCH</span>
 				<h1 class="auth-title">Đăng ký</h1>
 				<p class="auth-sub">Tạo tài khoản mới để sử dụng hệ thống</p>
 			</div>
@@ -262,20 +262,29 @@ body {
 							name="username" placeholder="Nhập tên đăng nhập"
 							value="${username}" required />
 					</div>
-
+					<div class="field">
+						<label>Email</label> <input class="input" type="email"
+							name="gmail" placeholder="Nhập gmail" required />
+					</div>
+					<div class="field">
+						<label>Số điện thoại</label> <input class="input" type="number"
+							name="phone" placeholder="Nhập số điện thoại" required />
+					</div>
+					<div class="field">
+						<label>Địa chỉ</label> <input class="input" type="text"
+							name="address" placeholder="Nhập địa chỉ" required />
+					</div>
 					<div class="field">
 						<label>Mật khẩu</label> <input class="input" type="password"
 							name="password" placeholder="Nhập mật khẩu" required
 							autocomplete="new-password" />
 					</div>
-
 					<div class="field">
 						<label>Xác nhận mật khẩu</label> <input class="input"
 							type="password" name="confirmPassword"
 							placeholder="Nhập lại mật khẩu" required
 							autocomplete="new-password" />
 					</div>
-
 					<button class="btn btn-primary" type="submit">Đăng ký</button>
 
 					<div class="divider">hoặc</div>
@@ -285,10 +294,7 @@ body {
 				</form>
 			</div>
 
-			<div class="auth-footer">
-				Đã có tài khoản? <a class="link"
-					href="${pageContext.request.contextPath}/login">Đăng nhập</a>
-			</div>
+		
 
 		</div>
 	</div>

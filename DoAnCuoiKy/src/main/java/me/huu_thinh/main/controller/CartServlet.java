@@ -20,6 +20,7 @@ import me.huu_thinh.main.model.Cart;
 import me.huu_thinh.main.model.User;
 import me.huu_thinh.main.service.BookService;
 import me.huu_thinh.main.service.CartService;
+import me.huu_thinh.main.util.ToastBar;
 
 
 
@@ -59,9 +60,11 @@ public class CartServlet extends HttpServlet  {
     			  cartTotalPrice += item.getTotalPrice();
     		  }
     	 }
-    	 double totalAllPrice = cartTotalPrice + 30000;
+    	 double shipPrice = cartTotalPrice > 0 ? 20000 : 0;
+    	 double totalAllPrice = cartTotalPrice + shipPrice;
     	 request.setAttribute("cartItems", items);
     	 request.setAttribute("cartTotalBookPrice", cartTotalPrice);
+    	 request.setAttribute("cartShipPrice", shipPrice);
     	 request.setAttribute("cartTotalAllPrice", totalAllPrice);
     	 request.getRequestDispatcher("/html/cart.jsp").forward(request, response);
     }
@@ -97,16 +100,13 @@ public class CartServlet extends HttpServlet  {
 	     User user = (User) session.getAttribute("currentUser");
 	     Book b = bookService.findById(bid);
 	     if(b == null) {
-	    	 session.setAttribute("snackbarMsg", "Lỗi không có sách, hãy tải lại trang ngay!");
-	    	 session.setAttribute("snackbarType", "error");
+	    	 ToastBar.showToast(session, "Lỗi không có sách, hãy tải lại trang ngay!");
 	     } else {
 	    	 boolean check = cartService.updateCart(user.getUserId(), bid, quantity);
 	    	 if(check) {
-	    		 session.setAttribute("snackbarMsg", "Đã xóa khỏi giỏ hàng thành công!");
-	    		 session.setAttribute("snackbarType", "success");
+	    		 ToastBar.showToast(session, "Đã xóa khỏi giỏ hàng thành công!");
 	    	 } else {
-	    		 session.setAttribute("snackbarMsg", "Lỗi khi cố xóa khỏi giỏ hàng");
-	    		 session.setAttribute("snackbarType", "error");
+	    		 ToastBar.showToast(session, "Lỗi khi cố xóa khỏi giỏ hàng");
 	    	 }
 	     }
 	     response.setContentType("application/json");

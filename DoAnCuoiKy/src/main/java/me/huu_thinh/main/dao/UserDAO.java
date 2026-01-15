@@ -209,19 +209,22 @@ public class UserDAO {
 		}
 	}
 
-	public boolean createUser(String username, String password_hash) {
+	public boolean createUser(String username, String password_hash, String gmail, String phone, String address) {
 		Connection conn = null;
 
 		try {
 			conn = DatabaseConnection.getConnection();
 
-			String sql = "INSERT INTO users (username, password_hash, role, created_at) VALUES (?, ?, ?, ?)";
+			String sql = "INSERT INTO users (username, password_hash, email, phone, address, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
 			PreparedStatement ps = conn.prepareStatement(sql);
 
 			ps.setString(1, username);
 			ps.setString(2, password_hash);
-			ps.setString(3, "customer"); 
-			ps.setDate(4, new Date(System.currentTimeMillis()));
+			ps.setString(3, gmail);
+			ps.setString(4, phone);
+			ps.setString(5, address);
+			ps.setString(6, "customer"); 
+			ps.setDate(7, new Date(System.currentTimeMillis()));
 
 			int rows = ps.executeUpdate();
 			ps.close();
@@ -296,11 +299,31 @@ public class UserDAO {
 		}
 	}
 
-	public static void delete(String id) {
+	
 
+	public static User findByUserName(String username) {
+		String sql = """
+			    SELECT user_id, username, email, password_hash, phone, address, role, created_at
+			    FROM users
+			    WHERE username = ?
+			""";
+
+	try (Connection c = DatabaseConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
+
+		ps.setString(1, username);
+
+		try (ResultSet rs = ps.executeQuery()) {
+			if (rs.next()) {
+				return new User(rs.getInt("user_id"), rs.getString("username"), rs.getString("email"),
+						rs.getString("password_hash"),
+						rs.getString("phone"), rs.getString("address"), rs.getString("role"),
+						rs.getDate("created_at")
+				);
+			}
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
 	}
-
-	public static User findById(String id) {
-		return null;
+	return null;
 	}
 }

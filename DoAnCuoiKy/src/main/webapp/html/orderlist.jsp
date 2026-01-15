@@ -63,10 +63,10 @@
 									<span class="badge bg-primary">Đang giao hàng</span>
 									</c:when>
 									<c:when test="${orderitem.status == 'SUCCESS'}">
-												<span class="badge bg-sucess">Đã giao hàng</span>
+									<span class="badge bg-success">Đã giao hàng</span>
 									</c:when>
 									<c:when test="${orderitem.status == 'CANCEL'}">
-										<span class="badge bg-danger">Đã hủy</span>
+									<span class="badge bg-danger">Đã hủy</span>
 									</c:when>
 									<c:otherwise>
 											<span class="badge">${orderitem.status}</span>

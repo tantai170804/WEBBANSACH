@@ -1,6 +1,8 @@
 package me.huu_thinh.main.service;
 
 import me.huu_thinh.main.dao.UserDAO;
+import me.huu_thinh.main.util.PasswordEncoding;
+import me.huu_thinh.main.util.UserInputVaild;
 
 public class RegisterService {
 
@@ -10,11 +12,14 @@ public class RegisterService {
 		this.userDAO = new UserDAO();
 	}
 
-	public RegisterResult register(String username, String password, String confirmPassword) {
+	public RegisterResult register(String username, String password, String confirmPassword, String gmail, String phone,String address) {
 
 		String u = normalize(username);
 		String p = normalize(password);
 		String cp = normalize(confirmPassword);
+		String g = normalize(gmail);
+		String ph = normalize(phone);
+		String a = normalize(address);
 
 		// 1) Validate input
 		if (u == null) {
@@ -26,6 +31,15 @@ public class RegisterService {
 		if (cp == null) {
 			return RegisterResult.fail("Vui lòng nhập lại mật khẩu.");
 		}
+		if (g == null) {
+			return RegisterResult.fail("Vui lòng nhập gmail.");
+		}
+		if (ph == null) {
+			return RegisterResult.fail("Vui lòng nhập số điện thoại.");
+		}
+		if (a == null) {
+			return RegisterResult.fail("Vui lòng nhập địa chỉ.");
+		}
 
 		if (u.length() < 3) {
 			return RegisterResult.fail("Tên đăng nhập phải có ít nhất 3 ký tự.");
@@ -36,17 +50,16 @@ public class RegisterService {
 		if (!p.equals(cp)) {
 			return RegisterResult.fail("Mật khẩu xác nhận không khớp.");
 		}
+		if (!UserInputVaild.isPhone(ph)) {
+			return RegisterResult.fail("Số điện thoại không phù hợp với dạng Việt Nam.");
+		}
 
-		// (Tuỳ chọn) validate fullName nếu bạn muốn bắt buộc
-		// if (fn == null) return RegisterResult.fail("Vui lòng nhập họ tên.");
-
-		// 2) Check trùng username
 		if (userDAO.existsByUsername(u)) {
 			return RegisterResult.fail("Tên đăng nhập đã tồn tại.");
 		}
-
-		// 3) Tạo user trong DB
-		boolean created = userDAO.createUser(u, p);
+        String password_hash = PasswordEncoding.encodingPassword(p);
+        
+		boolean created = userDAO.createUser(u, password_hash,g,ph,a);
 
 		if (!created) {
 			return RegisterResult.fail("Đăng ký thất bại. Vui lòng thử lại.");
