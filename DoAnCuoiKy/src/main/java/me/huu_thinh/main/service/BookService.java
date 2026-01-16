@@ -8,6 +8,13 @@ import me.huu_thinh.main.dto.BookViewDTO;
 import me.huu_thinh.main.model.Book;
 
 public class BookService {
+	
+	private BookDAO bookDAO;
+	
+	public BookService() {
+		this.bookDAO = new BookDAO();
+	}
+	
 	public static class Result {
 		private final boolean success;
 		private final List<String> errors;
@@ -170,5 +177,9 @@ public class BookService {
 			errors.add("Số lượng không hợp lệ.");
 		}
 		return errors;
+	}
+
+	public List<Book> getAllBook() {
+		return bookDAO.getAll();
 	}
 }

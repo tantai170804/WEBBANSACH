@@ -41,7 +41,7 @@ public class CartServlet extends HttpServlet  {
 	}
 	
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	 HttpSession session = request.getSession();
+    	 HttpSession session = request.getSession(false);
     	 User user = (User) session.getAttribute("currentUser");
     	 List<Cart> carts = cartService.getAllCartFromUser(user.getUserId());
     	 List<CartItemDTO> items = new ArrayList<>();

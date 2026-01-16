@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import me.huu_thinh.main.model.Order;
 import me.huu_thinh.main.service.OrderService;
 
-// Đường dẫn: http://localhost:8080/TenProject/admin/orders?page=1
+
 @WebServlet(name = "AdminOrderListServlet", urlPatterns = { "/admin/orders" })
 public class AdminOrderListServlet extends HttpServlet {
 
@@ -26,8 +26,6 @@ public class AdminOrderListServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-		// --- BƯỚC 1: Xử lý số trang (Page) ---
-		// Mặc định là trang 1 nếu không có tham số hoặc tham số lỗi
 		int page = 1;
 		try {
 			String pageStr = req.getParameter("page");
@@ -38,33 +36,24 @@ public class AdminOrderListServlet extends HttpServlet {
 			page = 1;
 		}
 
-		// --- BƯỚC 2: Thiết lập cấu hình phân trang ---
-		int limit = 10; // Số lượng đơn hàng hiển thị trên 1 trang
-		int offset = (page - 1) * limit; // Vị trí bắt đầu lấy trong DB
+		int limit = 10; 
+		int offset = (page - 1) * limit; 
 
-		// --- BƯỚC 3: Gọi Service lấy dữ liệu phân trang ---
-		// Lấy danh sách đơn hàng giới hạn theo limit và offset
 		List<Order> orderList = orderService.getOrdersPagination(limit, offset);
 
-		// Lấy tổng số lượng đơn hàng trong DB để tính tổng số trang
 		int totalItems = orderService.getTotalOrders();
 
-		// Tính tổng số trang (làm tròn lên). Ví dụ: 11 items / 10 limit = 1.1 -> Lên 2
-		// trang
 		int totalPages = (int) Math.ceil((double) totalItems / limit);
 
-		// --- BƯỚC 4: Đẩy dữ liệu sang JSP ---
-		req.setAttribute("orders", orderList); // Danh sách đơn hàng (chỉ 10 cái)
-		req.setAttribute("currentPage", page); // Trang hiện tại (để tô màu nút)
-		req.setAttribute("totalPages", totalPages); // Tổng số trang (để vẽ vòng lặp nút)
+		req.setAttribute("orders", orderList); 
+		req.setAttribute("currentPage", page); 
+		req.setAttribute("totalPages", totalPages);
 
-		// --- BƯỚC 5: Chuyển hướng về giao diện ---
 		req.getRequestDispatcher("/html/admin/order-list.jsp").forward(req, resp);
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// Chuyển mọi request POST về GET để xử lý hiển thị
 		doGet(req, resp);
 	}
 }

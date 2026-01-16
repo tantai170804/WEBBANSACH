@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import me.huu_thinh.main.dao.BookDAO;
 import me.huu_thinh.main.model.Book;
+import me.huu_thinh.main.service.BookService;
 
 @WebServlet("/randombook")
 public class RandomBookServlet extends HttpServlet {
@@ -19,12 +19,18 @@ public class RandomBookServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = -2237555271493442087L;
+	private BookService bookservice;
 
+	public void init() throws ServletException {
+		super.init();
+		this.bookservice = new BookService();
+	}
+	
 	@Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        List<Book> books = BookDAO.getAll();
+        List<Book> books = bookservice.getAllBook();
 
         if (books == null || books.isEmpty()) {
             return;

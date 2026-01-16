@@ -28,7 +28,7 @@ public class OrderListServlet extends HttpServlet {
 	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		 HttpSession session = request.getSession();
+		 HttpSession session = request.getSession(false);
     	 User user = (User) session.getAttribute("currentUser");
     	 List<OrderItemViewDTO> oiv = orderservice.getOrderItemView(user.getUserId());
     	 request.setAttribute("orderitems", oiv);

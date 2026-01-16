@@ -26,7 +26,6 @@ public class AdminCategoryDeleteServlet extends HttpServlet {
 
 	        // Nếu category đang được sách dùng -> không xóa
 	        if (BookCategoryDAO.isUsed(id)) {
-	            // gửi thông báo bằng query param cho nhanh
 	            response.sendRedirect(request.getContextPath() + "/admin/categories?msg=used");
 	            return;
 	        }

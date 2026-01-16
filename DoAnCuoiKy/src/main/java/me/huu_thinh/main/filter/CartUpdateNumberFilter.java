@@ -14,7 +14,6 @@ import javax.servlet.http.HttpSession;
 import me.huu_thinh.main.model.User;
 import me.huu_thinh.main.service.CartService;
 
-//Filter cho cart, update số lượng cart hiện cho giỏ hàng, nhắm tới session
 @WebFilter("/*")
 public class CartUpdateNumberFilter implements Filter {
 
@@ -28,7 +27,6 @@ public class CartUpdateNumberFilter implements Filter {
                 ? session.getAttribute("currentUser") //Session có attribute là user đã đăng nhập hiện tại
                 : null;
 
-        //Nếu có, update số lượng cart. Nếu không, set về 0
         int numberInCart = 0;
         if (userobj != null) {
         	User user = (User) userobj;

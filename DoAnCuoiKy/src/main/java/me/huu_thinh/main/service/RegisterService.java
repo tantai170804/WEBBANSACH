@@ -2,7 +2,7 @@ package me.huu_thinh.main.service;
 
 import me.huu_thinh.main.dao.UserDAO;
 import me.huu_thinh.main.util.PasswordEncoding;
-import me.huu_thinh.main.util.UserInputVaild;
+import me.huu_thinh.main.util.UserRegisterVaild;
 
 public class RegisterService {
 
@@ -50,7 +50,7 @@ public class RegisterService {
 		if (!p.equals(cp)) {
 			return RegisterResult.fail("Mật khẩu xác nhận không khớp.");
 		}
-		if (!UserInputVaild.isPhone(ph)) {
+		if (!UserRegisterVaild.isPhone(ph)) {
 			return RegisterResult.fail("Số điện thoại không phù hợp với dạng Việt Nam.");
 		}
 
@@ -75,7 +75,6 @@ public class RegisterService {
 		return s.isEmpty() ? null : s;
 	}
 
-	// DTO trả kết quả cho Servlet
 	public static class RegisterResult {
 		private final boolean success;
 		private final String message;

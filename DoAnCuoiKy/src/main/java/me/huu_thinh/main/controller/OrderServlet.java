@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import me.huu_thinh.main.model.Order;
 import me.huu_thinh.main.model.User;
 import me.huu_thinh.main.service.OrderService;
+import me.huu_thinh.main.util.ToastBar;
 
 @WebServlet("/order")
 public class OrderServlet extends HttpServlet {
@@ -27,23 +28,17 @@ public class OrderServlet extends HttpServlet {
 			orderservice = new OrderService();
 		}
 	
-	   protected void doGet(HttpServletRequest request, HttpServletResponse response)
-	            throws ServletException, IOException {
-	   }
 	   protected void doPost(HttpServletRequest request, HttpServletResponse response)
 	            throws ServletException, IOException {
-		   System.out.println("Post checking order");
-		   HttpSession session = request.getSession();
+		   HttpSession session = request.getSession(false);
 		   User user = (User) session.getAttribute("currentUser");
 	       
 	       boolean issucess = handleCheckout(user,request);
 	       response.sendRedirect(request.getContextPath() + "/cart"); 
 	       if(issucess) {
-	    	   session.setAttribute("snackbarMsg", "Đã thanh toán thành công!");
-		       session.setAttribute("snackbarType", "success");
+	    	   ToastBar.showToast(session, "Đã thanh toán thành công!");
 	       } else {
-	    	   session.setAttribute("snackbarMsg", "Đã thanh toán thành công!");
-		       session.setAttribute("snackbarType", "error");
+	    	   ToastBar.showToast(session, "Thanh toán thất bại !");
 	       }
 	   }
 

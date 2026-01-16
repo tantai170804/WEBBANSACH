@@ -97,7 +97,7 @@ public class BookDAO {
 		return list;
 	}
 
-	public static List<Book> getAll() {
+	public List<Book> getAll() {
 		List<Book> list = new ArrayList<>();
 		String sql = "SELECT * FROM books";
 
@@ -193,7 +193,6 @@ public class BookDAO {
 			ps.setString(7, b.getImageUrl());
 			ps.setString(8, b.getDescription());
 
-			// category_id có thể NULL
 			if (b.getCategoryId() != null) {
 				ps.setInt(9, b.getCategoryId());
 			} else {
@@ -202,7 +201,7 @@ public class BookDAO {
 
 			ps.setBoolean(10, b.isCanShow());
 
-			ps.setInt(11, b.getBookId()); // WHERE book_id = ?
+			ps.setInt(11, b.getBookId());
 
 			return ps.executeUpdate() > 0;
 
@@ -243,5 +242,4 @@ public class BookDAO {
 		return false;
 	}
 
-	// các hàm khác: getAll(), findById(), update(), delete()...
 }

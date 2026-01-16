@@ -22,7 +22,6 @@ public class AdminDashboardServlet extends HttpServlet {
     private BookCategoryDAO categoryDAO;
     private UserDAO userDAO;
     
-    // 2. Sử dụng OrderService thay vì PurchaseDAO
     private OrderService orderService;
 
     @Override
@@ -30,7 +29,6 @@ public class AdminDashboardServlet extends HttpServlet {
         bookDAO = new BookDAO();
         categoryDAO = new BookCategoryDAO();
         userDAO = new UserDAO();
-        // Khởi tạo Service
         orderService = new OrderService();
     }
 
@@ -38,35 +36,27 @@ public class AdminDashboardServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        // 3. Các thống kê cơ bản
-        // Lưu ý: Đảm bảo các DAO này có hàm countAll() trả về int
         int totalBooks = safeCount(() -> bookDAO.countAll());
         int totalCategories = safeCount(() -> categoryDAO.countAll());
         int totalUsers = safeCount(() -> userDAO.countAll());
 
-        // 4. Lấy tổng số đơn hàng từ OrderService
         int totalOrders = safeCount(() -> orderService.getTotalOrders());
 
-        // 5. Đẩy dữ liệu sang JSP
         req.setAttribute("totalBooks", totalBooks);
         req.setAttribute("totalCategories", totalCategories);
         req.setAttribute("totalUsers", totalUsers);
         req.setAttribute("totalOrders", totalOrders);
 
-        // Highlight menu sidebar
         req.setAttribute("activePage", "dashboard");
 
         req.getRequestDispatcher("/html/admin/dashboard.jsp").forward(req, resp);
     }
 
-    // --- Helper Methods ---
-
-    // Hàm an toàn: Nếu lỗi DB thì trả về 0 chứ không làm sập trang
     private int safeCount(CountSupplier supplier) {
         try {
             return supplier.get();
         } catch (Exception e) {
-            e.printStackTrace(); // In lỗi ra console để debug nếu cần
+            e.printStackTrace(); 
             return 0;
         }
     }

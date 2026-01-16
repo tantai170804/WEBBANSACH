@@ -34,8 +34,6 @@ public class ForgotPasswordServlet extends HttpServlet {
 	
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		String username = request.getParameter("username");
-		
-       
 		if(username.isBlank()) {
 			request.setAttribute("error", "Bạn phải nhập username");
 		} else {

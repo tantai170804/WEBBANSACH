@@ -21,45 +21,35 @@ public class AdminUserListServlet extends HttpServlet {
 
 		UserDAO dao = new UserDAO();
 
-		// 1. Thiết lập cấu hình phân trang
-		int page = 1; // Mặc định là trang 1
-		int limit = 10; // Số dòng trên mỗi trang (bạn có thể sửa thành 10 tùy ý)
-
-		// Kiểm tra nếu URL có tham số ?page=...
+		int page = 1; 
+		int limit = 10; 
 		if (request.getParameter("page") != null) {
 			try {
 				page = Integer.parseInt(request.getParameter("page"));
 				if (page < 1)
-					page = 1; // Không cho phép trang âm
+					page = 1; 
 			} catch (NumberFormatException e) {
-				page = 1; // Nếu người dùng nhập linh tinh (?page=abc) thì về trang 1
+				page = 1;
 			}
 		}
 
-		// 2. Tính toán Offset
 		int offset = (page - 1) * limit;
 
 		try {
-			// 3. Gọi DAO để lấy dữ liệu
-			int totalItems = dao.countAll(); // Đếm tổng số user trong DB
-			List<User> list = dao.findAll(limit, offset); // Lấy danh sách user của trang hiện tại
+			int totalItems = dao.countAll(); 
+			List<User> list = dao.findAll(limit, offset); 
 
-			// 4. Tính tổng số trang (Total Pages)
-			// Math.ceil: làm tròn lên (ví dụ 11 item / 5 = 2.2 => làm tròn thành 3 trang)
 			int totalPages = (int) Math.ceil((double) totalItems / limit);
 
-			// 5. Đẩy dữ liệu ra JSP
-			request.setAttribute("users", list); // Danh sách user hiển thị
-			request.setAttribute("currentPage", page); // Trang hiện tại
-			request.setAttribute("totalPages", totalPages); // Tổng số trang
+			request.setAttribute("users", list);
+			request.setAttribute("currentPage", page); 
+			request.setAttribute("totalPages", totalPages); 
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			request.setAttribute("error", "Lỗi lấy dữ liệu: " + e.getMessage());
 		}
 
-		// 6. Chuyển hướng về trang giao diện
-		// Lưu ý: Hãy đảm bảo đường dẫn JSP đúng với cấu trúc dự án của bạn
 		request.getRequestDispatcher("/html/admin/user-list.jsp").forward(request, response);
 	}
 

@@ -1,7 +1,6 @@
 package me.huu_thinh.main.model;
 
-import java.sql.Timestamp; // Dùng Timestamp để lưu cả ngày lẫn giờ phút giây
-
+import java.sql.Timestamp; 
 public class Order {
 	private int id;
 	private int userId;
@@ -17,7 +16,6 @@ public class Order {
 	public Order() {
 	}
 
-	// 2. Constructor dùng để INSERT (Không cần ID và Ngày tạo - vì DB tự sinh)
 	public Order(int userId, String fullName, String address, String phone, String paymentMethod, String status,
 			double totalPrice) {
 		this.userId = userId;
@@ -29,7 +27,6 @@ public class Order {
 		this.totalPrice = totalPrice;
 	}
 
-	// 3. Constructor ĐẦY ĐỦ dùng để SELECT (Lấy từ DB lên để hiện thị)
 	public Order(int id, int userId, String fullName, String address, String phone, String paymentMethod, String status,
 			double totalPrice, Timestamp createdAt, Timestamp updateAt) {
 		this.id = id;
@@ -44,7 +41,6 @@ public class Order {
 		this.updateAt = updateAt;
 	}
 
-	// --- GETTER & SETTER ---
 	public int getId() {
 		return id;
 	}
