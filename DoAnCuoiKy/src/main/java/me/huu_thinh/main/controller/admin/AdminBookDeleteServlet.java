@@ -21,7 +21,6 @@ public class AdminBookDeleteServlet extends HttpServlet {
         if (id != null) {
             bookService.delete(id);
         }
-
         response.sendRedirect(request.getContextPath() + "/admin/books");
     }
 

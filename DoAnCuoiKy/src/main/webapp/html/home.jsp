@@ -81,21 +81,7 @@
 
 <body>
 	<jsp:include page="header.jsp" />
-	
 	<div class="container my-4">
-		<form action="search" method="get" class="d-flex justify-content-center mb-3">
-  <div class="input-group input-group-sm" style="max-width: 600px;">
-    <input type="text"
-           name="keyword"
-           class="form-control"
-           placeholder="Tìm sách..."
-           value="${param.keyword}">
-    <button class="btn btn-primary" type="submit">
-      <p><i class="bi bi-search"></i> Tìm kiếm</p>
-    </button>
-  </div>
-</form>
-		
      <h2>Danh sách sản phẩm</h2>
         	<div class="row">
    				<c:forEach var="bookview" items="${bookviews}">

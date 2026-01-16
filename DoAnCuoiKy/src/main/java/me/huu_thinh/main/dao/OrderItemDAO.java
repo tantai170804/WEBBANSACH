@@ -13,7 +13,6 @@ import me.huu_thinh.main.model.OrderItem;
 
 public class OrderItemDAO {
 
-	// Helper method để convert từ CartItemDTO sang OrderItem và insert
 	public void insert(int orderId, CartItemDTO cart) {
 		OrderItem orderitem = new OrderItem();
 		orderitem.setOrderId(orderId);
@@ -23,7 +22,6 @@ public class OrderItemDAO {
 		insert(orderitem);
 	}
 
-	// Hàm insert chính xuống DB
 	public boolean insert(OrderItem item) {
 		String sql = "INSERT INTO order_items (order_id, book_id, quantity, price) VALUES (?, ?, ?, ?)";
 		Connection conn = null;
@@ -48,12 +46,9 @@ public class OrderItemDAO {
 		return false;
 	}
 
-	// Hàm này lấy danh sách sản phẩm của 1 đơn hàng cụ thể (Dùng cho Admin xem chi
-	// tiết)
 	public List<OrderItem> getByOrderId(int orderId) {
 		List<OrderItem> list = new ArrayList<>();
 
-		// SQL JOIN với bảng books để lấy thêm tên sách và hình ảnh
 		String sql = "SELECT oi.*, b.title, b.image_url " + "FROM order_items oi " + "JOIN books b ON oi.book_id = b.book_id "
 				+ "WHERE oi.order_id = ?";
 
@@ -67,16 +62,11 @@ public class OrderItemDAO {
 			while (rs.next()) {
 				OrderItem item = new OrderItem();
 
-				// Map dữ liệu từ bảng order_items
-				// (Nếu bảng order_items có cột id khóa chính thì thêm
-				// item.setId(rs.getInt("id")) )
 				item.setOrderId(rs.getInt("order_id"));
 				item.setBookId(rs.getInt("book_id"));
 				item.setQuantity(rs.getInt("quantity"));
 				item.setPrice(rs.getDouble("price"));
 
-				// Map thêm thông tin sách (Lấy từ bảng books nhờ lệnh JOIN)
-				// Hai dòng này bây giờ sẽ chạy tốt vì bạn đã update Model OrderItem
 				item.setBookName(rs.getString("title"));
 				item.setBookImage(rs.getString("image_url"));
 

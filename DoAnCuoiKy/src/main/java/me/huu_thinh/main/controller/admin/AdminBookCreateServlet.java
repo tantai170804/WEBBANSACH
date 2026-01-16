@@ -64,7 +64,6 @@ public class AdminBookCreateServlet extends HttpServlet {
             request.setAttribute("mode", "create");
             request.setAttribute("book", b);
             request.setAttribute("categories", BookCategoryDAO.getAll());
-            // gộp lỗi thành 1 chuỗi (hoặc bạn có thể show list)
             request.setAttribute("error", String.join(" ", result.getErrors()));
             request.getRequestDispatcher("/html/admin/book-form.jsp").forward(request, response);
             return;

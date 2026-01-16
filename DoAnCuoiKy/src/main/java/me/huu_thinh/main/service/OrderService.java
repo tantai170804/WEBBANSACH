@@ -24,15 +24,6 @@ public class OrderService {
 		this.cartservice = new CartService();
 	}
 
-	// 1. Đặt hàng
-	public boolean placeOrder(Order order, List<OrderItem> items) {
-		return orderDAO.createOrder(order, items);
-	}
-
-	public List<Order> getAllOrders() {
-		return orderDAO.getAllOrders();
-	}
-
 	public Order getOrderById(int id) {
 		return orderDAO.getOrderById(id);
 	}

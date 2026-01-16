@@ -15,7 +15,6 @@ public class BookCategoryDAO {
 	public static List<BookCategory> findAll(int limit, int offset) {
 		List<BookCategory> list = new ArrayList<>();
 
-		// Sắp xếp ID giảm dần để dữ liệu mới nhất lên đầu
 		String sql = "SELECT category_id, name, description FROM book_category "
 				+ "ORDER BY category_id DESC LIMIT ? OFFSET ?";
 
@@ -45,7 +44,7 @@ public class BookCategoryDAO {
 
 			return rs.next() ? rs.getInt(1) : 0;
 
-		} catch (Exception e) { // Bắt Exception hoặc SQLException
+		} catch (Exception e) {
 			e.printStackTrace();
 			return 0;
 		}
@@ -119,7 +118,6 @@ public class BookCategoryDAO {
 		}
 	}
 
-	// Nếu category đang được books tham chiếu -> sẽ lỗi FK (không xóa được)
 	public static boolean delete(int id) {
 		String sql = "DELETE FROM book_category WHERE category_id = ?";
 		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -133,7 +131,6 @@ public class BookCategoryDAO {
 		}
 	}
 
-	// tiện ích: check category có đang được dùng không
 	public static boolean isUsed(int id) {
 		String sql = "SELECT COUNT(*) FROM books WHERE category_id = ?";
 		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {

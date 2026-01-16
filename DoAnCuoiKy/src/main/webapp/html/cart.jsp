@@ -55,7 +55,6 @@
                         </span>
                         </strong>
                     </p>
-                    <button type="button" class="btn btn-warning btn-sm ms-1 btn-update">Cập nhật</button>
                     <button type="button" class="btn btn-danger btn-sm ms-2 btn-remove">Loại Bỏ</button>
                 </div>
             </div>
@@ -87,29 +86,52 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js"></script>
 <script>
-document.querySelectorAll(".btn-update").forEach(btn => {
-    btn.addEventListener("click", () => {
-        const item = btn.closest(".cart-item");
+function debounce(fn, delay = 500) {
+    let timer;
+    return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+    };
+}
+//AJAX cho phan cap nhat so luong gio hang
+document.querySelectorAll(".quantity-input").forEach(input => {
+    const autoUpdate = debounce(() => {
+        const item = input.closest(".cart-item");
         const bookId = item.dataset.bid;
-        const quantity = item.querySelector(".quantity-input").value;
-        if(!quantity || quantity <= 0){
-    		showToast("Số lượng không hợp lệ hoặc ít hơn 1, hãy nhập lại");
-    		return;
-    	} 
-        fetch("${pageContext.request.contextPath}/cart?action=update&bid="+bookId+"&quantity="+quantity, {
-            method: "POST"
-        })
+        const quantity = parseInt(input.value);
+        if (!quantity || quantity <= 0) {
+            showToast("Số lượng không hợp lệ hoặc ít hơn 1", "warning");
+            return;
+        }
+        fetch(
+            "${pageContext.request.contextPath}/cart?action=update"
+            + "&bid=" + bookId
+            + "&quantity=" + quantity,
+            { method: "POST" }
+        )
         .then(res => res.json())
         .then(data => {
-            item.querySelector(".item-total").innerText = data.itemTotalFormatted;
-            document.getElementsByClassName("cart-total")[0].innerText = data.cartTotalFormatted;
-            document.getElementsByClassName("cart-ship")[0].innerText = data.cartShippingPrice;
-            document.getElementsByClassName("cart-all-total")[0].innerText = data.cartAllTotalFormatted;
-            document.getElementsByClassName("cart-all-total")[1].innerText = data.cartAllTotalFormatted;
-            showToast("Đã cập nhật khỏi giỏ hàng thành công");
+            item.querySelector(".item-total").innerText =
+                data.itemTotalFormatted;
+            document.getElementsByClassName("cart-total")[0].innerText =
+                data.cartTotalFormatted;
+            document.getElementsByClassName("cart-ship")[0].innerText =
+                data.cartShippingPrice;
+            document.getElementsByClassName("cart-all-total")[0].innerText =
+                data.cartAllTotalFormatted;
+            if (document.getElementsByClassName("cart-all-total")[1]) {
+                document.getElementsByClassName("cart-all-total")[1].innerText =
+                    data.cartAllTotalFormatted;
+            }
+            showToast("Đã cập nhật giỏ hàng thành công", "success");
+        })
+        .catch(() => {
+            showToast("Lỗi cập nhật giỏ hàng", "error");
         });
-    });
+    }, 200); 
+    input.addEventListener("input", autoUpdate);
 });
+
 
 document.querySelectorAll(".btn-remove").forEach(btn => {
     btn.addEventListener("click", () => {

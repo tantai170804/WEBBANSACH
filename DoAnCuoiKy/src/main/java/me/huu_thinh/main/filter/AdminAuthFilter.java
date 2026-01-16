@@ -28,19 +28,16 @@ public class AdminAuthFilter implements Filter {
                 ? (User) session.getAttribute("currentUser")
                 : null;
 
-        // 1️⃣ Chưa đăng nhập → về login
         if (currentUser == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        // 2️⃣ Đã login nhưng KHÔNG phải admin → về trang user
         if (!"admin".equalsIgnoreCase(currentUser.getRole())) {
-            response.sendRedirect(request.getContextPath() + "/");
+        	 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Không có quyền !");
             return;
         }
 
-        // 3️⃣ Là admin → cho đi tiếp
         chain.doFilter(req, res);
     }
 }

@@ -18,7 +18,6 @@ public class UserDAO {
 
 	public List<User> findAll(int limit, int offset) {
 		List<User> list = new ArrayList<>();
-		// Sắp xếp ID giảm dần để User mới nhất hiện lên đầu
 		String sql = "SELECT * FROM users ORDER BY user_id DESC LIMIT ? OFFSET ?";
 
 		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -178,7 +177,6 @@ public class UserDAO {
 		return resultList;
 	}
 
-	// Kiểm tra username đã tồn tại chưa
 	public boolean existsByUsername(String username) {
 		Connection conn = null;
 

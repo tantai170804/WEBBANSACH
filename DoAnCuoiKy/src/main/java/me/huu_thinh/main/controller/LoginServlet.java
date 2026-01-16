@@ -1,6 +1,7 @@
 package me.huu_thinh.main.controller;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -10,7 +11,6 @@ import javax.servlet.http.HttpSession;
 
 import me.huu_thinh.main.model.User;
 import me.huu_thinh.main.service.LoginService;
-import me.huu_thinh.main.util.PasswordEncoding;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -33,10 +33,8 @@ public class LoginServlet extends HttpServlet {
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-     // Mã hóa password trước khi đăng nhập để xác nhận
-        String password_hash = PasswordEncoding.encodingPassword(password);
         
-        User user = loginService.login(username, password_hash);
+        User user = loginService.login(username, password);
 
         if (user != null) {
             HttpSession session = request.getSession(true);

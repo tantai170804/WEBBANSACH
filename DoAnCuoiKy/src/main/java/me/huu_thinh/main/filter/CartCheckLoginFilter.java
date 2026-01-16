@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-//Filter cho cart, yêu cầu phải có đăng nhập thì mới có thao tác liên quan tới cart
 @WebFilter(urlPatterns = {"/cart"})
 public class CartCheckLoginFilter implements Filter {
 
@@ -24,11 +23,11 @@ public class CartCheckLoginFilter implements Filter {
 
         HttpSession session = req.getSession(false);
         Object user = (session != null)
-                ? session.getAttribute("currentUser") //Session có attribute là user đã đăng nhập hiện tại
+                ? session.getAttribute("currentUser") 
                 : null;
 
         if (user == null) {
-            res.sendRedirect(req.getContextPath() + "/login");//Đưa về đăng nhập, nếu người dùng chưa đăng nhập.
+            res.sendRedirect(req.getContextPath() + "/login");
             return;
         }
             chain.doFilter(request, response);

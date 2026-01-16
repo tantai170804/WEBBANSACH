@@ -24,11 +24,11 @@ public class ChangePasswordCheckFilter implements Filter {
 
         HttpSession session = req.getSession(false);
         Object user = (session != null)
-                ? session.getAttribute("currentUser") //Session có attribute là user đã đăng nhập hiện tại
+                ? session.getAttribute("currentUser")
                 : null;
 
         if (user == null) {
-            res.sendRedirect(req.getContextPath() + "/login");//Đưa về đăng nhập, nếu người dùng chưa đăng nhập.
+            res.sendRedirect(req.getContextPath() + "/login");
             return;
         }
             chain.doFilter(request, response);

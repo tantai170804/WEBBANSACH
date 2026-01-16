@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-//Filter cho cart, yêu cầu phải có đăng nhập thì mới có thao tác liên quan tới cart
 @WebFilter(urlPatterns = {"/order","/orderlist"})
 public class OrderCheckLoginFilter implements Filter {
 

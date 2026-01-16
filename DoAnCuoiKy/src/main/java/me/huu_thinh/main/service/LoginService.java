@@ -2,6 +2,7 @@ package me.huu_thinh.main.service;
 
 import me.huu_thinh.main.dao.UserDAO;
 import me.huu_thinh.main.model.User;
+import me.huu_thinh.main.util.PasswordEncoding;
 
 public class LoginService {
 
@@ -19,14 +20,12 @@ public class LoginService {
 	        String p = normalize(password);
 
 	        if (u == null || p == null) return null;
-
-	        // Gọi DAO kiểm tra DB
-	        return userDAO.findByUsernameAndPassword(u, p);
+	        
+	        String password_hash = PasswordEncoding.encodingPassword(password);
+	        
+	        return userDAO.findByUsernameAndPassword(u, password_hash);
 	    }
 
-	    /**
-	     * Chuẩn hoá input: null -> null, trim, rỗng -> null
-	     */
 	    private String normalize(String s) {
 	        if (s == null) return null;
 	        s = s.trim();

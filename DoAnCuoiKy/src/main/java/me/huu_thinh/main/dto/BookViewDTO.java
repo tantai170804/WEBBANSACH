@@ -7,7 +7,7 @@ public class BookViewDTO {
 	private String title;
 	private double price;
 	private int quantityInStock;
-	private String categoryName; // từ bảng book_category
+	private String categoryName; 
 	private boolean canShow;
 
 	public BookViewDTO() {

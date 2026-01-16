@@ -31,14 +31,10 @@ public class AdminOrderUpdateServlet extends HttpServlet {
 
 			orderService.updateOrderStatus(orderId, status);
 
-			// 5. Cập nhật xong thì quay lại trang chi tiết đơn hàng đó
-			// Lưu ý: Đường dẫn "/admin/order-details" phải khớp với Servlet xem chi tiết mà
-			// bạn đã/sẽ viết
 			resp.sendRedirect(req.getContextPath() + "/admin/order-detail?id=" + orderId);
 
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
-			// Nếu lỗi ép kiểu số, quay về danh sách đơn hàng
 			resp.sendRedirect(req.getContextPath() + "/admin/orders");
 		} catch (Exception e) {
 			e.printStackTrace();
